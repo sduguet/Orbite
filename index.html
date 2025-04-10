@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./assets/scss/styles.css" rel="stylesheet">
+    <title>Orbite</title>
+    <link rel="icon" type="image/x-icon" href="./assets/img/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Vampiro+One&family=Yatra+One&display=swap" rel="stylesheet">
+    <script defer type="text/javascript" src="./assets/js/var.js"></script>
+    <script defer type="text/javascript" src="./assets/js/script.js"></script>
+</head>
+<body>
+    <section class="home page">
+        <img class="home__logo" src="./assets/img/logoName.png" alt="">
+
+        <nav class="nav">
+            <p class="nav__btn nav__btn--dex">Ma Collection</p>
+            <p class="nav__btn nav__btn--deck hide">Modifier mon deck de départ</p>
+            <p class="nav__btn nav__btn--game">Nouvelle Partie</p>
+        </nav>
+
+        <div class="stats hide">
+            <p class="stats__score">Meilleur scrore : <span class="stats__score--value"></span></p>
+            <p class="stats__manche">Meilleure manche : <span class="stats__manche--value"></span></p>
+        </div>
+
+        <p class="home__version"></p>
+    </section>
+
+    <section class="dex page hide">
+        <img class="back" src="./assets/img/back.png" alt="">
+        <img class="dex__logo" src="./assets/img/collection.png" alt="">
+
+        <ul class="dex-list">
+        </ul>
+    </section>
+
+    <main class="inGame page hide">
+        <div class="target">
+            <p class="target__txt">Manche <span class="target__manche"></span> : <span class="target__ptns"></span>/<span class="target__total"></span></p>
+        </div>
+
+        <div class="terrain">
+            <div class="terrain__row">
+                <div class="tuile" data-id="A" data-neighbors="BDE"></div>
+                <div class="tuile" data-id="B" data-neighbors="ACEF"></div>
+                <div class="tuile" data-id="C" data-neighbors="BFG"></div>
+            </div>
+            <div class="terrain__row">
+                <div class="tuile" data-id="D" data-neighbors="AEHI"></div>
+                <div class="tuile" data-id="E" data-neighbors="ABDFIJ"></div>
+                <div class="tuile" data-id="F" data-neighbors="BCEGJK"></div>
+                <div class="tuile" data-id="G" data-neighbors="CFKL"></div>
+            </div>
+            <div class="terrain__row">
+                <div class="tuile" data-id="H" data-neighbors="DIM"></div>
+                <div class="tuile" data-id="I" data-neighbors="DEHJMN"></div>
+                <div class="tuile tuile--sun" data-id="J" data-neighbors="EFIKNO"></div>
+                <div class="tuile" data-id="K" data-neighbors="FGJLOP"></div>
+                <div class="tuile" data-id="L" data-neighbors="GKP"></div>
+            </div>
+            <div class="terrain__row">
+                <div class="tuile" data-id="M" data-neighbors="HINQ"></div>
+                <div class="tuile" data-id="N" data-neighbors="IJMOQR"></div>
+                <div class="tuile" data-id="O" data-neighbors="JKNPRS"></div>
+                <div class="tuile" data-id="P" data-neighbors="KLOS"></div>
+            </div>
+            <div class="terrain__row">
+                <div class="tuile" data-id="Q" data-neighbors="MNR"></div>
+                <div class="tuile" data-id="R" data-neighbors="NOQS"></div>
+                <div class="tuile" data-id="S" data-neighbors="OPR"></div>
+            </div>
+        </div>
+
+        <div class="infoOvered">
+            <p class="infoOvered__mana"></p>
+            <p class="infoOvered__pwr"></p>
+            <img class="infoOvered__img" src="" alt="">
+        </div>
+
+        <div class="hand"></div>
+
+        <div class="br">
+            <div class="mana__container">
+                <p class="mana"></p>
+            </div>
+            <p class="nextTurn btn-flip" class="btn-flip" data-back="Fin de tour" data-front="waiting"></p>
+        </div>
+
+        <div class="end hide">
+            <div class="end__popup">
+                <p class="end__title">Manche <span class="end__manche"></span> terminée </p>
+                <p class="end__desc">Votre score est de  : <span class="end__score"></span>/<span class="end__total"></span></p>
+
+                <p class="end__result hide"></p>
+                
+                <p class="end__btn end__btn--next button-29">Continuer</p>
+                <p class="end__btn end__btn--home button-29">Retour</p>
+            </div>
+        </div>
+
+        <div class="recap hide">
+            <div class="recap__popup">
+                <p class="recap__title">
+                    Manche <span class="nbManche"></span>
+                </p>
+
+                <p class="recap__objectif">
+                    Marquez un minimum de
+                    <span class="objectif"></span>
+                    énergies cosmique.
+                </p>
+
+                <p class="recap__star hide">
+                    Vous changez de Système ! <br>
+                    Étoile : <span class="recap__star--star"></span>
+                </p>
+
+                <p class="recap__btn button-29">Commencer</p>
+            </div>
+        </div>
+
+        <div class="start hide">
+            <div class="start__popup">
+                <p class="start__title">Votre deck</p>
+                <ul class="start-list"></ul>
+
+                <p class="start__btn button-29">Commencer</p>
+            </div>
+        </div>
+
+        <div class="offrande hide">
+            <div class="offrande__popup">
+                <p class="offrande__title">Offrande</p>
+                
+                <div class="offrande__group">
+                    <ul class="offrande-offrandeList"></ul>
+
+                    <div class="offrande__block">
+                        <p class="offrande__moins hide"></p>
+                        <p class="offrande__plus hide"></p>
+
+                        <p class="offrande__btn button-29">Garder mon deck tel quel</p>
+                    </div>
+                </div>
+
+                <!-- <p class="offrande__title">Votre deck</p> -->
+                <ul class="offrande-deckList"></ul>
+            </div>
+        </div>
+    </main>
+
+    <section class="deck page hide">
+        <img class="back" src="./assets/img/back.png" alt="">
+        <img class="deck__logo" src="./assets/img/logoDeck.png" alt="">
+
+        <div class="deck__group">
+            <p class="deck__title">Votre deck</p>
+
+            <ul class="deck-deckList">
+            </ul>
+        </div>
+
+        <div class="deck__block">
+            <p class="deck__title">Cartes trouvées</p>
+
+            <ul class="deck-collectionList">
+            </ul>
+        </div>
+    </section>
+</body>
+</html>

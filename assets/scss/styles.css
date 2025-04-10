@@ -1,0 +1,1104 @@
+@charset "UTF-8";
+/* --- RESET --- */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+
+body {
+  line-height: 1;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+blockquote, q {
+  quotes: none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: "";
+  content: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* Chrome */
+input::-webkit-inner-spin-button,
+input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Opéra*/
+input::-o-inner-spin-button,
+input::-o-outer-spin-button {
+  -o-appearance: none;
+  margin: 0;
+}
+
+img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* --- /RESET --- */
+body {
+  background-color: #1e1e1e;
+}
+
+.hide {
+  display: none !important;
+}
+
+.home,
+.dex,
+.deck,
+.inGame {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+.home::before,
+.dex::before,
+.deck::before,
+.inGame::before {
+  content: "";
+  width: 100%;
+  height: 100%;
+  background-image: url("../img/bg.jpg");
+  background-position: center;
+  background-size: cover;
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  opacity: 0.5;
+}
+
+.inGame {
+  max-height: 100vh;
+  justify-content: center;
+  overflow: hidden;
+}
+.inGame::before {
+  content: "";
+  background-image: url("../img/bg-inGame.jpg");
+  opacity: 1;
+}
+
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.home__version {
+  color: white;
+  position: absolute;
+  bottom: 8px;
+  right: 16px;
+  opacity: 0.5;
+}
+.home__logo {
+  width: 240px;
+  height: -moz-fit-content;
+  height: fit-content;
+}
+.home .nav {
+  margin-top: 256px;
+  display: flex;
+  gap: 32px;
+  color: white;
+}
+.home .nav__btn {
+  padding: 16px 24px;
+  border-radius: 8px;
+  border: 2px solid rgba(30, 30, 30, 0.8431372549);
+  background-color: rgba(30, 30, 30, 0.4941176471);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.home .nav__btn:hover {
+  background-color: rgba(30, 30, 30, 0.8431372549);
+}
+
+.dex {
+  padding: 32px 0 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.dex .back {
+  width: 64px;
+  position: absolute;
+  top: 32px;
+  left: 32px;
+  cursor: pointer;
+}
+.dex__logo {
+  height: 80px;
+}
+.dex-list {
+  max-width: 1540px;
+  margin-top: 64px;
+  padding: 0 70px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.dex-list__ele {
+  display: flex;
+  position: relative;
+}
+.dex-list__ele--not-found::before {
+  content: "";
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  background-color: #1e1e1e;
+  display: block;
+  position: absolute;
+  opacity: 0.5;
+  z-index: 1;
+  filter: blur(4px);
+}
+.dex-list__ele--not-found > img {
+  filter: blur(4px);
+}
+.dex-list__ele--not-found .pwr,
+.dex-list__ele--not-found .mana {
+  filter: blur(4px);
+}
+.dex-list__ele .pwr,
+.dex-list__ele .mana {
+  width: 60px;
+  color: #1E1E1E;
+  font-size: 40px;
+  text-align: center;
+  position: absolute;
+  top: 14px;
+  opacity: 0.8;
+}
+.dex-list__ele .mana {
+  font-family: "Vampiro One";
+  transform: rotate(-30deg);
+  left: 15px;
+}
+.dex-list__ele .pwr {
+  font-family: "Yatra One";
+  top: 18px;
+  right: 13px;
+}
+
+.challenge {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  position: absolute;
+  z-index: 2;
+  overflow: hidden;
+}
+.challenge__img {
+  width: -moz-max-content;
+  width: max-content;
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-54%);
+}
+.challenge__title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+  position: absolute;
+  bottom: 110px;
+}
+.challenge__txt {
+  max-width: 225px;
+  text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+  line-height: 20px;
+  position: absolute;
+  top: 285px;
+}
+
+.terrain {
+  width: -moz-fit-content;
+  width: fit-content;
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+}
+.terrain__row {
+  display: flex;
+  gap: 25px;
+}
+
+.tuile {
+  width: 125px;
+  height: 110px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  transition: all 0.3s ease-in-out;
+}
+.tuile:hover {
+  transform: scale(1.05);
+}
+.tuile[data-id=J] .tuile__bg path {
+  fill: #d8b02d;
+  fill-opacity: 0.5;
+}
+.tuile:not([data-id=J]) {
+  cursor: pointer;
+}
+.tuile:has(.waitingNeptune) .tuile__bg path, .tuile:has(.waitingPhoebe) .tuile__bg path {
+  fill: #6272bd;
+}
+.tuile:has(.waitingTRAPPIST1B) .tuile__bg path {
+  fill: #77bd62;
+}
+.tuile:has(.waitingNeptune.waitingPhoebe) .tuile__bg path, .tuile:has(.waitingNeptune.waitingTRAPPIST1B) .tuile__bg path {
+  fill: #6d9890;
+}
+.tuile:has(.obstructed) {
+  cursor: not-allowed;
+}
+.tuile:has(.obstructed) .tuile__bg path {
+  fill-opacity: 0.25;
+}
+.tuile__bg {
+  width: 100%;
+  position: absolute;
+  transition: all 0.3s ease-in-out;
+}
+.tuile__bg path {
+  transition: all 0.3s ease-in-out;
+}
+.tuile__hexa {
+  width: 100%;
+  position: absolute;
+  transition: all 0.3s ease-in-out;
+}
+.tuile__hexa--negative {
+  filter: invert(1);
+}
+.tuile__hexa path {
+  transition: all 0.3s ease-in-out;
+}
+.tuile__content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.tuile__pwr {
+  width: 32px;
+  height: 32px;
+  border-radius: 100px;
+  background-image: url("../img/power.png");
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 18px;
+  text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+  position: absolute;
+  top: -12px;
+  right: 16px;
+}
+.tuile__pwr--up {
+  color: #06c506;
+}
+.tuile__pwr--down {
+  color: #bd0a0a;
+}
+
+.hand {
+  display: flex;
+  gap: 4px;
+  position: absolute;
+  bottom: -118px;
+  left: 32px;
+}
+
+.card {
+  max-width: 200px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.5s ease-in-out;
+  transform: translate(0, 0);
+}
+.card:hover {
+  transform: translateY(-118px) !important;
+}
+.card--selected {
+  transform: translateY(-118px) !important;
+}
+.card--negative .card__mana,
+.card--negative .card__pwr {
+  color: white;
+}
+.card--negative .card__img {
+  filter: invert(1);
+}
+.card__title {
+  font-weight: 700;
+  font-size: 20px;
+}
+.card__mana {
+  color: #1E1E1E;
+  font-family: "Vampiro One";
+  font-size: 32px;
+  text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+  position: absolute;
+  top: 10px;
+  left: 24px;
+  z-index: 1;
+  transform: rotate(-30deg);
+  opacity: 0.8;
+}
+.card__mana--up {
+  color: #f30606 !important;
+}
+.card__mana--down {
+  color: #238b23 !important;
+}
+.card__pwr {
+  width: 55px;
+  color: #1E1E1E;
+  font-family: "Yatra One";
+  font-size: 30px;
+  text-align: center;
+  text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+  position: absolute;
+  top: 13px;
+  right: 4px;
+  z-index: 1;
+  opacity: 0.8;
+}
+.card__pwr--up {
+  color: #238b23;
+}
+.card__pwr--down {
+  color: #f30606;
+}
+
+.end {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(30, 30, 30, 0.8470588235);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.end__popup {
+  min-width: 300px;
+  border-radius: 8px;
+  padding: 32px;
+  background: linear-gradient(rgba(30, 30, 30, 0.8), rgba(30, 30, 30, 0.6)), url("../img/bg-popup.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  color: white;
+  font-size: 18px;
+}
+.end__title {
+  color: #e1e1e1;
+  font-family: "Yatra One";
+  font-size: 40px;
+  text-align: center;
+  text-shadow: 1px 1px 1px rgba(30, 30, 30, 0.5647058824);
+}
+.end__desc {
+  margin-top: 32px;
+  text-shadow: 1px 1px 1px rgba(30, 30, 30, 0.5647058824);
+}
+.end__score {
+  font-weight: 700;
+}
+.end__result {
+  margin-top: 8px;
+}
+.end__btn {
+  width: -moz-fit-content;
+  width: fit-content;
+  margin: 32px auto 0;
+}
+
+.recap {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(30, 30, 30, 0.8470588235);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.recap__popup {
+  min-width: 300px;
+  border-radius: 8px;
+  padding: 32px;
+  background: linear-gradient(rgba(30, 30, 30, 0.8), rgba(30, 30, 30, 0.6)), url("../img/bg-popup.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  color: #e1e1e1;
+  font-size: 18px;
+}
+.recap__title {
+  font-family: "Yatra One";
+  font-size: 40px;
+  text-align: center;
+  text-shadow: 1px 1px 1px rgba(30, 30, 30, 0.5647058824);
+}
+.recap__objectif {
+  text-shadow: 1px 1px 1px rgba(30, 30, 30, 0.3764705882);
+}
+.recap__objectif .objectif {
+  font-weight: 700;
+}
+.recap__star {
+  margin-top: -8px;
+  align-self: flex-start;
+  text-shadow: 1px 1px 1px rgba(30, 30, 30, 0.3764705882);
+  line-height: normal;
+}
+.recap__star--star {
+  font-weight: 700;
+}
+.start {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(30, 30, 30, 0.8470588235);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.start__popup {
+  min-width: 300px;
+  border-radius: 8px;
+  padding: 32px;
+  background: linear-gradient(rgba(30, 30, 30, 0.8), rgba(30, 30, 30, 0.6)), url("../img/bg-popup.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+.start__title {
+  color: #e1e1e1;
+  font-family: "Yatra One";
+  font-size: 40px;
+  text-align: center;
+  text-shadow: 1px 1px 1px rgba(30, 30, 30, 0.5647058824);
+}
+.start-list {
+  width: 1220px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 2px 4px;
+}
+.start-list__ele {
+  transition: all 0.6s ease-in-out;
+  position: relative;
+}
+.start-list__ele img {
+  box-shadow: 1px 2px 3px 0px rgba(0, 0, 0, 0.5);
+  border-radius: 6px;
+}
+.start .pwr,
+.start .mana {
+  width: 52px;
+  color: #1E1E1E;
+  font-size: 32px;
+  text-align: center;
+  position: absolute;
+  top: 9px;
+  opacity: 0.8;
+}
+.start .mana {
+  font-family: "Vampiro One";
+  transform: rotate(-30deg);
+  left: 7px;
+}
+.start .pwr {
+  font-family: "Yatra One";
+  top: 13px;
+  right: 6px;
+}
+
+.offrande {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(30, 30, 30, 0.8470588235);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.offrande__popup {
+  min-width: 300px;
+  border-radius: 8px;
+  padding: 24px;
+  background: linear-gradient(rgba(30, 30, 30, 0.8), rgba(30, 30, 30, 0.6)), url("../img/bg-popup.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+.offrande__title {
+  color: #e1e1e1;
+  font-family: "Yatra One";
+  font-size: 40px;
+  text-align: center;
+  text-shadow: 1px 1px 1px rgba(30, 30, 30, 0.5647058824);
+}
+.offrande__group {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 64px;
+}
+.offrande__block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.offrande:has(.offrande__plus.hide) .offrande__moins {
+  opacity: 0.4;
+}
+.offrande__moins {
+  color: rgb(216, 43, 43);
+  font-size: 20px;
+  font-weight: 700;
+}
+.offrande__moins::before {
+  content: "-";
+  padding-right: 6px;
+}
+.offrande:has(.offrande__moins.hide) .offrande__plus {
+  opacity: 0.4;
+}
+.offrande__plus {
+  color: rgb(50, 170, 50);
+  font-size: 20px;
+  font-weight: 700;
+}
+.offrande__plus::before {
+  content: "+";
+  padding-right: 6px;
+}
+.offrande-offrandeList {
+  width: 608px;
+  height: 280px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  perspective: 1000px;
+}
+.offrande-offrandeList__ele {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 1s;
+  cursor: pointer;
+}
+.offrande-offrandeList__ele.flipped {
+  transform: rotateY(180deg);
+}
+.offrande-offrandeList__ele.flipped.selected {
+  transition: transform 0.3s ease;
+  transform: rotateY(180deg) translateY(-4px) scale(1.04);
+}
+.offrande-offrandeList__ele.flipped.selected img {
+  box-shadow: 0 5px 6px 0px rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
+}
+.offrande-offrandeList__ele img {
+  box-shadow: 0 5px 6px 0px rgba(0, 0, 0, 0.5);
+  border-radius: 6px;
+}
+.offrande-offrandeList__ele .front,
+.offrande-offrandeList__ele .back {
+  position: absolute;
+  width: 100%;
+  max-width: 400px;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+.offrande-offrandeList__ele .back {
+  transform: rotateY(180deg);
+}
+.offrande-offrandeList__ele .pwr,
+.offrande-offrandeList__ele .mana {
+  width: 52px;
+  color: #1E1E1E;
+  font-size: 32px;
+  text-align: center;
+  position: absolute;
+  top: 9px;
+  opacity: 0.8;
+}
+.offrande-offrandeList__ele .mana {
+  font-family: "Vampiro One";
+  transform: rotate(-30deg);
+  left: 7px;
+}
+.offrande-offrandeList__ele .pwr {
+  font-family: "Yatra One";
+  top: 12px;
+  right: 6px;
+}
+.offrande-deckList {
+  width: 940px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px 8px;
+}
+.offrande-deckList__ele {
+  transition: all 0.3s ease;
+  position: relative;
+  cursor: pointer;
+}
+.offrande-deckList__ele.selected {
+  transform: translateY(-4px) scale(1.05);
+}
+.offrande-deckList__ele.selected img {
+  box-shadow: 0 2px 3px 0px rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
+}
+.offrande-deckList__ele img {
+  box-shadow: 0 2px 3px 0px rgba(0, 0, 0, 0.5);
+  border-radius: 6px;
+}
+.offrande-deckList__ele .pwr,
+.offrande-deckList__ele .mana {
+  width: 38px;
+  color: #1E1E1E;
+  font-size: 24px;
+  text-align: center;
+  position: absolute;
+  top: 8px;
+  opacity: 0.8;
+}
+.offrande-deckList__ele .mana {
+  font-family: "Vampiro One";
+  transform: rotate(-30deg);
+  left: 7px;
+}
+.offrande-deckList__ele .pwr {
+  font-family: "Yatra One";
+  top: 9px;
+  right: 5px;
+}
+.infoOvered {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  transition: all 0.2s ease-in-out;
+}
+.infoOvered__img {
+  max-width: 300px;
+}
+.infoOvered__mana {
+  color: #1E1E1E;
+  font-family: "Vampiro One";
+  font-size: 40px;
+  text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+  position: absolute;
+  top: 19px;
+  left: 36px;
+  transform: rotate(-30deg);
+  opacity: 0.8;
+}
+.infoOvered__pwr {
+  width: 75px;
+  color: #1E1E1E;
+  font-family: "Yatra One";
+  font-size: 40px;
+  text-align: center;
+  text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+  position: absolute;
+  top: 22px;
+  right: 11px;
+  opacity: 0.8;
+}
+
+.br {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  color: #1E1E1E;
+  position: absolute;
+  bottom: 30px;
+  right: 32px;
+}
+.br .mana {
+  font-family: "Vampiro One";
+  font-size: 60px;
+  opacity: 0.8;
+  transform: rotate(-30deg);
+}
+.br .mana__container {
+  width: 96px;
+  height: 96px;
+  background-image: url("../img/mana.png");
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-flip {
+  width: 150px;
+  opacity: 1;
+  outline: 0;
+  color: #fff;
+  line-height: 40px;
+  position: relative;
+  text-align: center;
+  letter-spacing: 1px;
+  display: inline-block;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-family: "Poppins";
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-flip:hover:after {
+  opacity: 1;
+  transform: translateY(0) rotateX(0);
+}
+.btn-flip:hover:before {
+  opacity: 0;
+  transform: translateY(50%) rotateX(90deg);
+}
+.btn-flip::after {
+  top: 0;
+  left: 0;
+  opacity: 0;
+  width: 100%;
+  color: #1e1e1e;
+  display: block;
+  transition: 0.5s;
+  position: absolute;
+  background: white;
+  border: 2px solid #323237;
+  content: attr(data-back);
+  transform: translateY(-50%) rotateX(90deg);
+  border-radius: 4px;
+}
+.btn-flip::before {
+  top: 0;
+  left: 0;
+  border-radius: 4px;
+  border: 2px solid #323237;
+  opacity: 1;
+  color: white;
+  display: block;
+  padding: 0 30px;
+  line-height: 40px;
+  transition: 0.5s;
+  position: relative;
+  background: #1e1e1e;
+  content: attr(data-front);
+  transform: translateY(0) rotateX(0);
+}
+
+.stats {
+  padding: 16px;
+  border-radius: 0 8px 0 0;
+  background-color: rgba(255, 255, 255, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: white;
+  font-size: 18px;
+  text-shadow: 1px 1px 1px rgba(30, 30, 30, 0.5647058824);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+.stats__score--value {
+  font-weight: 700;
+}
+.stats__manche--value {
+  font-weight: 700;
+}
+
+/* CSS */
+.button-29 {
+  align-items: center;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  background: url("../img/bg-popup2.png");
+  background-position-x: center;
+  border: 0;
+  border-radius: 6px;
+  box-shadow: rgba(66, 61, 35, 0.1) 0 2px 4px, rgba(66, 61, 35, 0.1) 0 7px 13px -3px, rgba(71, 2, 31, 0.5) 0 -3px 0 inset;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  height: 48px;
+  justify-content: center;
+  list-style: none;
+  overflow: hidden;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-bottom: 3px;
+  position: relative;
+  text-align: left;
+  text-decoration: none;
+  transition: box-shadow 0.15s, transform 0.15s;
+  -moz-user-select: none;
+       user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  will-change: box-shadow, transform;
+  text-shadow: 1px 1px 1px rgba(30, 30, 30, 0.5647058824);
+  font-size: 18px;
+}
+
+.button-29:focus {
+  box-shadow: #470a1d 0 0 0 1.5px inset, rgba(66, 61, 35, 0.1) 0 2px 4px, rgba(66, 61, 35, 0.1) 0 7px 13px -3px, #470a1d 0 -3px 0 inset;
+}
+
+.button-29:hover {
+  box-shadow: rgba(66, 61, 35, 0.1) 0 4px 8px, rgba(66, 61, 35, 0.1) 0 7px 13px -3px, rgba(71, 10, 29, 0.6274509804) 0 -3px 0 inset;
+  transform: translateY(-2px);
+}
+
+.button-29:active {
+  box-shadow: #470a1d 0 3px 7px inset;
+  transform: translateY(2px);
+}
+
+.target {
+  padding: 16px;
+  border-radius: 0 0 0 8px;
+  background-color: rgba(255, 255, 255, 0.4);
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  color: white;
+  font-size: 18px;
+  text-shadow: 1px 1px 1px rgba(30, 30, 30, 0.5647058824);
+  position: absolute;
+  top: 0;
+  right: 0;
+  transition: all 0.5s ease;
+}
+.target__ptns {
+  font-weight: 700;
+}
+
+.deck {
+  padding: 32px 0 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.deck .back {
+  width: 64px;
+  position: absolute;
+  top: 32px;
+  left: 32px;
+  cursor: pointer;
+}
+.deck__logo {
+  height: 80px;
+}
+.deck-deckList, .deck-collectionList {
+  max-width: 1540px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+.deck-deckList__ele, .deck-collectionList__ele {
+  display: flex;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+.deck-deckList__ele.selected, .deck-collectionList__ele.selected {
+  transform: translateY(-4px) scale(1.02);
+}
+.deck-deckList__ele.selected img, .deck-collectionList__ele.selected img {
+  box-shadow: 0 5px 6px 0px rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
+}
+.deck-deckList__ele .pwr,
+.deck-deckList__ele .mana, .deck-collectionList__ele .pwr,
+.deck-collectionList__ele .mana {
+  width: 60px;
+  color: #1E1E1E;
+  font-size: 40px;
+  text-align: center;
+  position: absolute;
+  top: 12px;
+  opacity: 0.8;
+}
+.deck-deckList__ele .mana, .deck-collectionList__ele .mana {
+  font-family: "Vampiro One";
+  transform: rotate(-30deg);
+  left: 10px;
+}
+.deck-deckList__ele .pwr, .deck-collectionList__ele .pwr {
+  font-family: "Yatra One";
+  top: 15px;
+  right: 9px;
+}
+.deck__group {
+  margin-top: 64px;
+  border-radius: 32px;
+  padding: 32px;
+  background: url("../img/bg-popup.jpg");
+  background-size: cover;
+  background-position-x: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+.deck__block {
+  margin-top: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.deck__title {
+  color: white;
+  font-family: "Yatra One";
+  font-size: 40px;
+}
+
+.cardGaiamotto {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(30, 30, 30, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: all 0.5s ease;
+  opacity: 0;
+}
+.cardGaiamotto__popup {
+  border-radius: 8px;
+  padding: 24px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transition: all 1.5s ease;
+}
+.cardGaiamotto__popup--grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.cardStart {
+  width: 250px;
+  transition: all 1.5s ease-in-out, opacity 0.4s ease-in-out;
+  position: relative;
+}
+.cardStart .pwr,
+.cardStart .mana {
+  width: 60px;
+  color: #1E1E1E;
+  font-size: 40px;
+  text-align: center;
+  position: absolute;
+  top: 12px;
+  opacity: 0.8;
+}
+.cardStart .mana {
+  font-family: "Vampiro One";
+  transform: rotate(-30deg);
+  left: 10px;
+}/*# sourceMappingURL=styles.css.map */
