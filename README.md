@@ -4,7 +4,7 @@
 
 **Orbite est un jeu de cartes solo dans l’univers de l’espace.**  
 
-Affrontez les défis manche après manche et cumulez un maximum de points pour progresser toujours plus loin dans l’infini galactique.  
+Affrontez les défis manche après manche et cumulez un maximum de points pour progresser toujours plus loin dans l’infini galactique.
 À chaque victoire, débloquez de nouvelles cartes et améliorez votre deck pour repousser les limites de votre exploration.  
 <ins>Votre objectif ultime</ins> : découvrir toutes les cartes du jeu et assembler le deck parfait pour explorer les confins de l’univers.
 
