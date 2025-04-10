@@ -266,7 +266,7 @@ function NextTurn() {
 function SelectTuile() {
     const tuile = this;
 
-    if (tuile.dataset.id === 'J' || tuile.querySelector('[data-card]')) return;
+    if (tuile.dataset.id === 'J') return;
 
     if (selectedCardNode) {
         const selectedCard = playerHand.filter(card => card.id === selectedCardNode.dataset.id)[0];
@@ -613,7 +613,7 @@ function RevealPower(tuileNode, cardRevealed) {
             break;
 
         case '026':
-            const allPlanetsOnBoardExecptEris = Array.from(document.querySelectorAll(`.tuile__content[data-card]:not([data-card="026"])`));
+            const allPlanetsOnBoardExecptEris = Array.from(document.querySelectorAll(`.tuile__content[data-type="${TYPES[0]}"][data-card]:not([data-card="026"])`));
             const randomIndex = randomBetween(0, allPlanetsOnBoardExecptEris.length - 1);
             allPlanetsOnBoardExecptEris[randomIndex].classList.add('destroyed');
             cardsDestroyToReset.push(allPlanetsOnBoardExecptEris[randomIndex].dataset.card);
@@ -628,19 +628,14 @@ function RevealPower(tuileNode, cardRevealed) {
                     allPlanetsOnBoardExecptEris[randomIndex].style.transition = 'all 2s ease';
                     allPlanetsOnBoardExecptEris[randomIndex].style.opacity = '0';
 
-                    const content = allPlanetsOnBoardExecptEris[randomIndex].parentNode.querySelector('.tuile__content');
+                    const content = allPlanetsOnBoardExecptEris[randomIndex].parentNode.querySelector('.tuile__hexa');
                     content.style.transition = 'all 2s ease';
                     content.style.opacity = '0';
 
                     setTimeout(() => {
                         allPlanetsOnBoardExecptEris[randomIndex].parentNode.innerHTML = `
                             <svg class="tuile__bg" viewBox="0 0 100 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <defs>
-                                    <pattern id="imagePattern${tuileNode.dataset.id}" patternUnits="userSpaceOnUse" width="100" height="242">
-                                        <image href="./assets/img/blank.png" width="100" height="242" x="0" y="-43" preserveAspectRatio="xMidYMid slice"/>
-                                    </pattern>
-                                </defs>
-                                <path d="M23.5571 3.19824C24.4503 1.65123 26.1009 0.698242 27.8872 0.698242L72.1137 0.698242C73.9001 0.698242 75.5507 1.65124 76.4439 3.19824L98.5571 41.4995C99.4503 43.0465 99.4503 44.9525 98.5571 46.4995L76.4439 84.8008C75.5507 86.3478 73.9001 87.3008 72.1137 87.3008L27.8872 87.3008C26.1009 87.3008 24.4503 86.3478 23.5571 84.8008L1.44386 46.4995C0.5507 44.9525 0.550701 43.0465 1.44386 41.4995L23.5571 3.19824Z" fill="url(#imagePattern${tuileNode.dataset.id})"/>
+                                <path d="M23.5571 3.19824C24.4503 1.65123 26.1009 0.698242 27.8872 0.698242L72.1137 0.698242C73.9001 0.698242 75.5507 1.65124 76.4439 3.19824L98.5571 41.4995C99.4503 43.0465 99.4503 44.9525 98.5571 46.4995L76.4439 84.8008C75.5507 86.3478 73.9001 87.3008 72.1137 87.3008L27.8872 87.3008C26.1009 87.3008 24.4503 86.3478 23.5571 84.8008L1.44386 46.4995C0.5507 44.9525 0.550701 43.0465 1.44386 41.4995L23.5571 3.19824Z" fill="rgba(255, 255, 255, .2)"/>
                             </svg>
                             <div class="tuile__content"></div>
                         `;
@@ -713,19 +708,15 @@ function RevealPower(tuileNode, cardRevealed) {
                             svg.style.filter = 'invert(0)';
                             svg.style.transition = 'all 2s ease';
                             svg.style.opacity = '0';
-                            const content = neighborNode.parentNode.querySelector('.tuile__content');
+                            
+                            const content = neighborNode.parentNode.querySelector('.tuile__hexa');
                             content.style.transition = 'all 2s ease';
                             content.style.opacity = '0';
 
                             setTimeout(() => {
                                 neighborNode.parentNode.innerHTML = `
                                     <svg class="tuile__bg" viewBox="0 0 100 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <defs>
-                                            <pattern id="imagePattern${neighborNode.parentNode.dataset.id}" patternUnits="userSpaceOnUse" width="100" height="242">
-                                                <image href="./assets/img/blank.png" width="100" height="242" x="0" y="-43" preserveAspectRatio="xMidYMid slice"/>
-                                            </pattern>
-                                        </defs>
-                                        <path d="M23.5571 3.19824C24.4503 1.65123 26.1009 0.698242 27.8872 0.698242L72.1137 0.698242C73.9001 0.698242 75.5507 1.65124 76.4439 3.19824L98.5571 41.4995C99.4503 43.0465 99.4503 44.9525 98.5571 46.4995L76.4439 84.8008C75.5507 86.3478 73.9001 87.3008 72.1137 87.3008L27.8872 87.3008C26.1009 87.3008 24.4503 86.3478 23.5571 84.8008L1.44386 46.4995C0.5507 44.9525 0.550701 43.0465 1.44386 41.4995L23.5571 3.19824Z" fill="url(#imagePattern${neighborNode.parentNode.dataset.id})"/>
+                                        <path d="M23.5571 3.19824C24.4503 1.65123 26.1009 0.698242 27.8872 0.698242L72.1137 0.698242C73.9001 0.698242 75.5507 1.65124 76.4439 3.19824L98.5571 41.4995C99.4503 43.0465 99.4503 44.9525 98.5571 46.4995L76.4439 84.8008C75.5507 86.3478 73.9001 87.3008 72.1137 87.3008L27.8872 87.3008C26.1009 87.3008 24.4503 86.3478 23.5571 84.8008L1.44386 46.4995C0.5507 44.9525 0.550701 43.0465 1.44386 41.4995L23.5571 3.19824Z" fill="rgba(255, 255, 255, .2)"/>
                                     </svg>
                                     <div class="tuile__content"></div>
                                 `;
