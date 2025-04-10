@@ -1,5 +1,5 @@
 # 🪐Orbite
-#### Thèmes : `🃏Jeu de cartes` `♟️Deck building` `💀 Rogue-like` `🌠Espace` `📦Collection`
+#### Thèmes : `🃏Jeu de cartes` `♟️Deck building` `💀Rogue-like` `🌠Espace` `📦Collection`
 <br>
 
 **Orbite est un jeu de cartes solo dans l’univers de l’espace.**  
@@ -12,7 +12,7 @@ Affrontez les défis manche après manche et cumulez un maximum de points pour p
 
 #### 📃 Point règles :
  - Une manche se joue en 6 tours.
- -  Le deck contient 12 cartes au total.
+ - Le deck contient 12 cartes au total.
  - On commence avec 3 cartes en main, puis on pioche 1 carte au début de chaque tour.
  - On ne peut avoir que 6 cartes maximum en main.
  - Chaque carte a un coût en mana.
