@@ -266,7 +266,7 @@ function NextTurn() {
 function SelectTuile() {
     const tuile = this;
 
-    if (tuile.dataset.id === 'J') return;
+    if (tuile.dataset.id === 'J' || tuile.querySelector('[data-card]')) return;
 
     if (selectedCardNode) {
         const selectedCard = playerHand.filter(card => card.id === selectedCardNode.dataset.id)[0];
