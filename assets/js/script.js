@@ -639,6 +639,8 @@ function RevealPower(tuileNode, cardRevealed) {
                             </svg>
                             <div class="tuile__content"></div>
                         `;
+
+                        UpdateCurrentAllPointsScored();
                     }, 2000);
                 }, 500);
             }
@@ -708,7 +710,7 @@ function RevealPower(tuileNode, cardRevealed) {
                             svg.style.filter = 'invert(0)';
                             svg.style.transition = 'all 2s ease';
                             svg.style.opacity = '0';
-                            
+
                             const content = neighborNode.parentNode.querySelector('.tuile__hexa');
                             content.style.transition = 'all 2s ease';
                             content.style.opacity = '0';
@@ -720,6 +722,8 @@ function RevealPower(tuileNode, cardRevealed) {
                                     </svg>
                                     <div class="tuile__content"></div>
                                 `;
+
+                                UpdateCurrentAllPointsScored();
                             }, 2000);
                         }, 500);
                     }
@@ -2019,7 +2023,7 @@ function SelectStarAndDifficulty() {
     }
 
     if (nbManche > 4) currentStar = ChooseRandomStar();
-    else currentStar = '001';
+    else currentStar = '011';
 
     pointsToScore += STARS.find(s => s.id === currentStar).difficulty;
 
