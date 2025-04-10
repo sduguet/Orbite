@@ -1101,4 +1101,25 @@ body {
   font-family: "Vampiro One";
   transform: rotate(-30deg);
   left: 10px;
+}
+
+.sparkles-container {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: calc(100% - 40px);
+  height: calc(100% - 40px);
+  pointer-events: none;
+  overflow: visible;
+}
+
+.sparkle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  opacity: 0;
+  pointer-events: none;
 }/*# sourceMappingURL=styles.css.map */

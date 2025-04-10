@@ -1750,7 +1750,7 @@ function InitializationGame() {
                 const cardGaiamottoPopup = document.createElement('ul');
                 cardGaiamottoPopup.classList.add('cardGaiamotto__popup', 'cardGaiamotto__popup--grid3');
                 cardGaiamotto.appendChild(cardGaiamottoPopup);
-    
+
                 while (i < 6) {
                     const card = document.createElement('li');
                     card.classList.add('cardStart');
@@ -1760,30 +1760,30 @@ function InitializationGame() {
                         <img class="cardStart__img" src="./assets/img/cards/0${78 + i}.png" alt="">
                         <p class="mana">${ALL_CARDS.find(c => c.id === `0${78 + i}`).mana}</p>
                     `;
-    
+
                     setTimeout(() => {
                         const trueI = parseInt(card.dataset.i);
                         card.style.transform = `translate(${window.innerWidth + (250 * (3 - trueI)) - 400}px, ${window.innerHeight}px)`;
                     }, (500 * (3 - i)) + 2000);
-    
+
                     i += 1;
                 }
-    
+
                 setTimeout(() => {
                     cardGaiamotto.style.opacity = '1';
                     cardGaiamottoPopup.style.opacity = '1';
                 }, 100);
-    
-    
+
+
                 setTimeout(() => {
                     cardGaiamotto.style.opacity = '0';
-    
+
                     setTimeout(() => {
                         body.querySelector('.inGame .cardGaiamotto').remove();
                     }, 500);
                 }, 4300);
             }, delay);
-            
+
             delay += 2100;
         }
 
@@ -1821,6 +1821,7 @@ function InitializationGame() {
 
 
 function SetOffrande() {
+    const localDex = JSON.parse(localStorage.getItem('dex'));
     offrandeChoiceAdd = '';
     offrandeChoiceDelete = '';
     popupOffrandeBtn.innerHTML = 'Garder mon deck tel quel';
@@ -1891,10 +1892,12 @@ function SetOffrande() {
                 <img src="./assets/img/cards/${cardId}.png" alt="">
                 <p class="pwr">${ALL_CARDS.find(c => c.id === cardId).pwr || ALL_CARDS.find(c => c.id === cardId).pwr === 0 ? ALL_CARDS.find(c => c.id === cardId).pwr : ''}</p>
                 <p class="mana">${ALL_CARDS.find(c => c.id === cardId)?.mana}</p>
+                ${!localDex.allCards.find(c => c.id === cardId)?.found ? `<div class="sparkles-container"></div>` : ''}
             </div>
         `;
 
         offrandeNode.appendChild(li);
+        if(!localDex.allCards.find(c => c.id === cardId)?.found) new SparkleAnimation(li.querySelector('.sparkles-container'));
 
         li.addEventListener('click', () => {
             if (li.classList.contains('flipped')) {
@@ -2023,7 +2026,7 @@ function SelectStarAndDifficulty() {
     }
 
     if (nbManche > 4) currentStar = ChooseRandomStar();
-    else currentStar = '011';
+    else currentStar = '001';
 
     pointsToScore += STARS.find(s => s.id === currentStar).difficulty;
 
