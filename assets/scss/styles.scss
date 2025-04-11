@@ -351,13 +351,24 @@ body {
 	flex-direction: column;
 	position: relative;
 	cursor: pointer;
-	transition: all .5s ease-in-out;
+	transition: all .5s ease;
 	transform: translate(0, 0);
 
-	&:hover {
-		transform: translateY(-118px) !important;
+	&::after {
+		content: '';
+		width: 100%;
+		height: 100%;
+		display: block;
+		position: absolute;
+		top: 0;
+		left: 0;
 	}
 
+	&:active {
+		cursor: grabbing;
+	}
+
+	&:hover,
 	&--selected {
 		transform: translateY(-118px) !important;
 	}

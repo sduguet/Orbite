@@ -198,6 +198,7 @@ function HtmlCards() {
 
             handNode.appendChild(div);
             div.addEventListener('click', SelectCard);
+            div.addEventListener('mousedown', DragAnimation);
 
             if (document.querySelector('.start.hide')) {
                 div.style.opacity = '0';
@@ -220,12 +221,56 @@ function HtmlCards() {
 }
 
 
+function DragAnimation(e) {
+    const cardDragged = this;
+
+    cardDragged.classList.add('dragged');
+    cardDragged.dataset.originX = e.clientX;
+    cardDragged.dataset.originY= e.clientY;
+    cardDragged.dataset.scale = 1;
+
+    document.onmousemove = drag;
+	document.onmouseup = drop;
+}
+
+function drag(e) {
+    const cardDragged = document.querySelector('.dragged');
+    const currentScale = parseFloat(cardDragged.dataset.scale);
+    const scale = Math.max(currentScale - 0.015, .5);
+
+    cardDragged.dataset.scale = scale;
+    cardDragged.setAttribute(
+        'style',
+        `
+            transition: none;
+            transform: translate(${e.clientX - parseInt(cardDragged.dataset.originX)}px, ${e.clientY - parseInt(cardDragged.dataset.originY) - 118}px) rotate(4deg) scale(${scale}) !important;
+        `
+    );
+}
+
+function drop(e) {
+    const cardDragged = document.querySelector('.dragged');
+
+    cardDragged.classList.remove('dragged');
+    cardDragged.setAttribute('style', '');
+
+    setTimeout(() => {
+        cardDragged.style.transform = `translate(0px, 0px) rotate(0deg)`;
+    }, 10);
+    
+    document.onmousemove = null;
+	document.onmouseup = null;
+}
+
+
 function SelectCard() {
     selectedCardNode = this;
 
     const oldSelectedCard = document.querySelector('.card--selected');
     oldSelectedCard?.classList.remove('card--selected');
     if (oldSelectedCard !== selectedCardNode) selectedCardNode.classList.add('card--selected');
+
+    if (!selectedCardNode.classList.contains('card--selected')) selectedCardNode = null;
 }
 
 
@@ -266,7 +311,7 @@ function NextTurn() {
 function SelectTuile() {
     const tuile = this;
 
-    if (tuile.dataset.id === 'J') return;
+    if (tuile.dataset.id === 'J' || tuile.querySelector('[data-card]')) return;
 
     if (selectedCardNode) {
         const selectedCard = playerHand.filter(card => card.id === selectedCardNode.dataset.id)[0];
