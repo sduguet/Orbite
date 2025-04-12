@@ -225,31 +225,63 @@ function DragAnimation(e) {
     const cardDragged = this;
 
     cardDragged.classList.add('dragged');
+    cardDragged.dataset.oldX = e.clientX;
     cardDragged.dataset.originX = e.clientX;
     cardDragged.dataset.originY= e.clientY;
     cardDragged.dataset.scale = 1;
+    cardDragged.dataset.rotate = 0;
 
-    document.onmousemove = drag;
-	document.onmouseup = drop;
+    document.onmousemove = Drag;
+	document.onmouseup = Drop;
 }
 
-function drag(e) {
+
+function Drag(e) {
     const cardDragged = document.querySelector('.dragged');
     const currentScale = parseFloat(cardDragged.dataset.scale);
-    const scale = Math.max(currentScale - 0.015, .5);
+    const currentRotate = parseFloat(cardDragged.dataset.rotate);
+    const scale = Math.max(currentScale - 0.01, .5);
+    const rotate = e.clientX > parseInt(cardDragged.dataset.oldX) 
+        ? Math.min(currentRotate + 0.05, 5)
+        : Math.max(currentRotate - 0.05, -5);
 
+    cardDragged.dataset.oldX = e.clientX;
     cardDragged.dataset.scale = scale;
+    cardDragged.dataset.rotate = rotate;
     cardDragged.setAttribute(
         'style',
         `
             transition: none;
-            transform: translate(${e.clientX - parseInt(cardDragged.dataset.originX)}px, ${e.clientY - parseInt(cardDragged.dataset.originY) - 118}px) rotate(4deg) scale(${scale}) !important;
+            transform: translate(${e.clientX - parseInt(cardDragged.dataset.originX)}px, ${e.clientY - parseInt(cardDragged.dataset.originY) - 118}px) rotate(${rotate}deg) scale(${scale}) !important;
         `
     );
+
+    document.querySelector('.tuile--hover')?.classList.remove('tuile--hover')
+
+    tuiles.forEach(tuile => {
+        const rect = tuile.getBoundingClientRect();
+
+        if (
+            e.clientX >= rect.left &&
+            e.clientX <= rect.right &&
+            e.clientY >= rect.top &&
+            e.clientY <= rect.bottom
+        ) {
+            tuile.classList.add('tuile--hover');
+        }
+    });
 }
 
-function drop(e) {
+
+function Drop() {
     const cardDragged = document.querySelector('.dragged');
+
+    const selectedTuile = document.querySelector('.tuile--hover');
+    if (selectedTuile) {
+        selectedCardNode = cardDragged;
+        selectedTuile.classList.remove('tuile--hover');
+        SelectTuile(selectedTuile);
+    }
 
     cardDragged.classList.remove('dragged');
     cardDragged.setAttribute('style', '');
@@ -308,8 +340,10 @@ function NextTurn() {
 }
 
 
-function SelectTuile() {
-    const tuile = this;
+function SelectTuile(t) {
+    const tuile = this?.classList?.contains('tuile')
+        ? this
+        : t;
 
     if (tuile.dataset.id === 'J' || tuile.querySelector('[data-card]')) return;
 
