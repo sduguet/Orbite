@@ -2314,7 +2314,10 @@ function InitChangeDeck() {
 
         deckList.appendChild(cardNode);
         cardNode.addEventListener('click', () => {
-            cardNode.classList.toggle('selected');
+            const oldSelected = deckList.querySelector('.deck-deckList__ele.selected');
+            oldSelected?.classList.remove('selected');
+
+            if (oldSelected !== cardNode) cardNode.classList.add('selected');
 
             if (cardNode.classList.contains('selected')) {
                 deckRemove = cardNode.dataset.id;
@@ -2340,7 +2343,7 @@ function InitChangeDeck() {
     const allCardsFound = localDex.allCards.filter(card => card.found && !localDex.defaultDeck.includes(card.id) && ALL_CARDS.find(c => c.id === card.id).playable);
     allCardsFound.forEach(card => {
         const cardNode = document.createElement('li');
-        cardNode.classList.add('deck-deckList__ele');
+        cardNode.classList.add('deck-collectionList__ele');
         cardNode.dataset.id = card.id;
         cardNode.innerHTML = `
             <img src="./assets/img/cards/${card.id}.png" alt="">
@@ -2350,7 +2353,10 @@ function InitChangeDeck() {
 
         collectionList.appendChild(cardNode);
         cardNode.addEventListener('click', () => {
-            cardNode.classList.toggle('selected');
+            const oldSelected = collectionList.querySelector('.deck-collectionList__ele.selected');
+            oldSelected?.classList.remove('selected');
+
+            if (oldSelected !== cardNode) cardNode.classList.add('selected');
 
             if (cardNode.classList.contains('selected')) {
                 deckAdd = cardNode.dataset.id;
