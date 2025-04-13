@@ -1083,6 +1083,14 @@ body {
 		height: 80px;
 	}
 
+	&__head {
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 64px;
+	}
+
 	&-deckList,
 	&-collectionList {
 		max-width: 1540px;
@@ -1156,6 +1164,34 @@ body {
 		color: white;
 		font-family: 'Yatra One';
 		font-size: 40px;
+	}
+}
+
+.filters {
+	display: flex;
+	align-items: center;
+	gap: 64px;
+
+	&__group {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+	}
+
+	&__btn {
+		border-radius: 8px;
+		display: flex;
+		transition: all .2s ease;
+		cursor: pointer;
+
+		&--radius {
+			border-radius: 100px;
+		}
+
+		&--selected {
+			box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.4);
+			transform: translateY(-3px) rotate(2deg);
+		}
 	}
 }
 
