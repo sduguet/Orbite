@@ -730,7 +730,13 @@ function RevealPower(tuileNode, cardRevealed) {
         case '027':
             if (lastCardPlayed) {
                 const lastCardPlayedNode = document.querySelector(`.tuile__content[data-card="${lastCardPlayed.id}"]`)
-                const lastCardPlayedActualPower = lastCardPlayedNode.dataset.pwr ? parseInt(lastCardPlayedNode.dataset.pwr) : 0;
+                let lastCardPlayedActualPower = lastCardPlayedNode.dataset.pwr ? parseInt(lastCardPlayedNode.dataset.pwr) : 0;
+
+                if (currentStar === '007') lastCardPlayedActualPower += 2;
+                else if (currentStar === '009') lastCardPlayedActualPower -= 2;
+                else if (currentStar === '004') lastCardPlayedActualPower += 3;
+                else if (currentStar === '021') lastCardPlayedActualPower -= 3;
+
                 tuileContent.dataset.pwr = lastCardPlayedActualPower;
                 tuileContent.querySelector('.tuile__pwr').innerHTML = tuileContent.dataset.pwr;
             }
@@ -1460,7 +1466,14 @@ function PowerEndOfTurn() {
     }
     // --- 036
     document.querySelectorAll('.tuile__content[data-card="036"][data-claimed="false"]').forEach(trappist1F => {
-        playerHand.push(deepClone(ALL_CARDS.find(card => card.id === '036')));
+        const clone036 = deepClone(ALL_CARDS.find(card => card.id === '036'));
+
+        if (currentStar === '006') clone036.pwr += 2;
+        else if (currentStar === '008') clone036.pwr -= 2;
+        else if (currentStar === '004') clone036.pwr += 3;
+        else if (currentStar === '021') clone036.pwr -= 3;
+
+        playerHand.push(clone036);
         HtmlCards();
         trappist1F.dataset.claimed = true;
     });
@@ -1733,7 +1746,7 @@ function ShowDeck() {
         inner += `
             <li class="start-list__ele" data-id="${cardId}">
                 <img src="./assets/img/cards/${cardId}.png" alt="">
-                <p class="pwr">${ALL_CARDS.find(c => c.id === cardId).pwr ? ALL_CARDS.find(c => c.id === cardId).pwr : ''}</p>
+                <p class="pwr">${ALL_CARDS.find(c => c.id === cardId).pwr || ALL_CARDS.find(c => c.id === cardId).pwr === 0 ? ALL_CARDS.find(c => c.id === cardId).pwr : ''}</p>
                 <p class="mana">${ALL_CARDS.find(c => c.id === cardId)?.mana}</p>
             </li>
         `;
