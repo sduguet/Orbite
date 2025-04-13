@@ -2394,6 +2394,8 @@ function InitLocalStorage() {
             }
         });
     } else if (localDex.version !== VERSION) {
+        localDex = RevertGaiamotto(localDex);
+
         localDex.version = VERSION;
         const oldLd = localDex.allCards
         localDex.allCards = ALL_CARDS.map((card, i) => {
