@@ -2391,6 +2391,8 @@ function InitChangeDeck() {
             } else deckAdd = '';
         })
     });
+
+    InitFilters();
 }
 
 
@@ -2540,5 +2542,108 @@ function PowerRecalculation(parentStart, parentFinish) {
     });
     parentFinishNeighbors.forEach(neighbor => {
         if (neighbor.dataset.pwr && neighbor.type === TYPES[0]) AddToTuile(neighbor, orbitRegulation);
+    });
+}
+
+
+function InitFilters() {
+    const filters = document.querySelectorAll('.deck .filters__btn');
+    filters.forEach(filter => filter.addEventListener('click', SelectFilter));
+}
+
+
+function SelectFilter() {
+    const btn = this;
+    const oldSelectedInSameType = document.querySelector(`.deck .filters__btn[data-data="${btn.dataset.data}"].filters__btn--selected`);
+    oldSelectedInSameType?.classList.remove('filters__btn--selected');
+    if (btn !== oldSelectedInSameType) btn.classList.add('filters__btn--selected');
+
+    FilterAction();
+}
+
+
+function FilterAction() {
+    const allCollectionCards = document.querySelectorAll('.deck-collectionList__ele');
+    allCollectionCards.forEach(card => card.classList.remove('hide'));
+
+    const activeFilters = document.querySelectorAll('.deck .filters__btn--selected');
+    activeFilters.forEach(filter => {
+        const filterData = filter.dataset.data;
+        const filterValue = filter.dataset.value;
+
+        if (filterData === 'type') {
+            if (filterValue === 'lune') {
+                allCollectionCards.forEach(card => {
+                    if (ALL_CARDS.find(c => c.id === card.dataset.id).type !== TYPES[1]) card.classList.add('hide');
+                });
+
+                return;
+            } else if (filterValue === 'planet') {
+                allCollectionCards.forEach(card => {
+                    if (ALL_CARDS.find(c => c.id === card.dataset.id).type !== TYPES[0]) card.classList.add('hide');
+                });
+            }
+        }
+
+        if (filterData === 'element') {
+            switch (filterValue) {
+                case 'feu':
+                    allCollectionCards.forEach(card => {
+                        if (!ALL_CARDS.find(c => c.id === card.dataset.id)?.element?.includes(ELEMENTS[0])) card.classList.add('hide');
+                        if (card.dataset.id === '009') card.classList.remove('hide');
+                    });
+                    break;
+
+                case 'eau':
+                    allCollectionCards.forEach(card => {
+                        if (!ALL_CARDS.find(c => c.id === card.dataset.id)?.element?.includes(ELEMENTS[1])) card.classList.add('hide');
+                        if (card.dataset.id === '010') card.classList.remove('hide');
+                    });
+                    break;
+
+                case 'air':
+                    allCollectionCards.forEach(card => {
+                        if (!ALL_CARDS.find(c => c.id === card.dataset.id)?.element?.includes(ELEMENTS[2])) card.classList.add('hide');
+                        if (card.dataset.id === '011') card.classList.remove('hide');
+                    });
+                    break;
+
+                case 'terre':
+                    allCollectionCards.forEach(card => {
+                        if (!ALL_CARDS.find(c => c.id === card.dataset.id)?.element?.includes(ELEMENTS[3])) card.classList.add('hide');
+                        if (card.dataset.id === '012') card.classList.remove('hide');
+                    });
+                    break;
+            
+                default:
+                    break;
+            }
+        }
+
+        if (filterData === 'nature') {
+            console.log(filterValue);
+            switch (filterValue) {
+                case 'tellurique':
+                    allCollectionCards.forEach(card => {
+                        if (ALL_CARDS.find(c => c.id === card.dataset.id)?.nature !== NATURES[0]) card.classList.add('hide');
+                        if (card.dataset.id === '013') card.classList.remove('hide');
+                    });
+                    break;
+                case 'gazeuse':
+                    allCollectionCards.forEach(card => {
+                        if (ALL_CARDS.find(c => c.id === card.dataset.id)?.nature !== NATURES[1]) card.classList.add('hide');
+                        if (card.dataset.id === '014') card.classList.remove('hide');
+                    });
+                    break;
+                case 'naine':
+                    allCollectionCards.forEach(card => {
+                        if (ALL_CARDS.find(c => c.id === card.dataset.id)?.nature !== NATURES[2]) card.classList.add('hide');
+                    });
+                    break;
+            
+                default:
+                    break;
+            }
+        }
     });
 }
