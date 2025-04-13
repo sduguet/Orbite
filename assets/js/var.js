@@ -1,4 +1,4 @@
-const VERSION = '1.1.0';
+const VERSION = '1.1.1';
 const TYPES = ['planet', 'lune', 'asteroid', 'star', 'ship'];
 const ELEMENTS = ['feu', 'eau', 'air', 'terre'];
 const NATURES = ['Tellurique', 'Gazeuse', 'Naine'];
@@ -519,7 +519,7 @@ const ALL_CARDS = [
     {
         'id': '045',
         'name': 'Hécate',
-        'type': TYPES[2],
+        'type': TYPES[1],
         'mana': 0,
         'pwr': 0,
         'desc': `[Continu] -4 aux planètes situées à son orbite`,
@@ -840,7 +840,7 @@ const ALL_CARDS = [
         'desc': `[Début de partie] Ajoute les 4 navettes à votre deck.`,
         'offrande': false,
         'playable': true,
-        'challenge': `Marquer au moins 70 points d'énergie cosmique dans une manche.`,
+        'challenge': `Marquer au moins 100 points d'énergie cosmique dans une manche.`,
     },
     {
         'id': '073',

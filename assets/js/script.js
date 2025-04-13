@@ -1537,7 +1537,7 @@ function End() {
         UpdateHomeStats();
     }
 
-    if (allPoints >= 70 && !localDex.allCards.find(c => c.id === '072').found) {
+    if (allPoints >= 100 && !localDex.allCards.find(c => c.id === '072').found) {
         localDex.allCards.find(c => c.id === '072').found = Date.now();
         localStorage.setItem('dex', JSON.stringify(localDex));
         UpdateCollection();
@@ -2308,7 +2308,7 @@ function InitChangeDeck() {
         cardNode.dataset.id = cardId;
         cardNode.innerHTML = `
             <img src="./assets/img/cards/${cardId}.png" alt="">
-            <p class="pwr">${ALL_CARDS.find(c => c.id === cardId).pwr ? ALL_CARDS.find(c => c.id === cardId).pwr : ''}</p>
+            <p class="pwr">${ALL_CARDS.find(c => c.id === cardId).pwr || ALL_CARDS.find(c => c.id === cardId).pwr === 0 ? ALL_CARDS.find(c => c.id === cardId).pwr : ''}</p>
             <p class="mana">${ALL_CARDS.find(c => c.id === cardId)?.mana}</p>
         `;
 
@@ -2380,7 +2380,7 @@ function InitChangeDeck() {
 
 
 function InitLocalStorage() {
-    const localDex = JSON.parse(localStorage.getItem('dex')) || {};
+    let localDex = JSON.parse(localStorage.getItem('dex')) || {};
 
     if (!localDex.version) localDex.version = VERSION;
 
@@ -2394,6 +2394,8 @@ function InitLocalStorage() {
             }
         });
     } else if (localDex.version !== VERSION) {
+        localDex = RevertGaiamotto(localDex);
+
         localDex.version = VERSION;
         const oldLd = localDex.allCards
         localDex.allCards = ALL_CARDS.map((card, i) => {
@@ -2412,7 +2414,7 @@ function InitLocalStorage() {
     // Specials cards
     if (
         localDex.maxPointsScored &&
-        localDex.maxPointsScored >= 70 &&
+        localDex.maxPointsScored >= 100 &&
         !localDex.allCards.find(c => c.id === '072').found
     ) {
         localDex.allCards.find(c => c.id === '072').found = Date.now();
@@ -2433,6 +2435,32 @@ function InitLocalStorage() {
     }
 
     localStorage.setItem('dex', JSON.stringify(localDex));
+}
+
+
+function RevertGaiamotto(localDex) {
+    if (
+        localDex.maxPointsScored < 100 &&
+        localDex.allCards.find(c => c.id === '072').found
+    ) {
+        ['072', '073', '074', '075', '076'].forEach(id => {
+            const card = localDex.allCards.find(c => c.id === id);
+            if (card) card.found = false;
+        });
+
+        if (localDex.defaultDeck.includes('072')) {
+            const replacementCard = ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012']
+                .find(cardId => !localDex.defaultDeck.includes(cardId));
+
+            if (replacementCard) {
+                localDex.defaultDeck = localDex.defaultDeck.map(cardId => 
+                    cardId === '072' ? replacementCard : cardId
+                );
+            }
+        }
+    }
+
+    return localDex;
 }
 
 
