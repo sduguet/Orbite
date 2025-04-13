@@ -368,9 +368,11 @@ function SelectTuile(t) {
             ) {
                 // Animation
                 if (blockByElectro) {
-                    const muaraeD = document.querySelector('.tuile__content[data-card="041"]')
-                    muaraeD.parentNode.style.background = '#d8942d81';
-                    setTimeout(() => { muaraeD.parentNode.style.removeProperty('background'); }, 1000);
+                    const muaraeD = document.querySelector('.tuile__content[data-card="041"]');
+                    muaraeD.parentNode.querySelector('.tuile__hexa').style.filter = 'brightness(2)';
+                    setTimeout(() => { muaraeD.parentNode.querySelector('.tuile__hexa').style.filter = 'brightness(.6)'; }, 200);
+                    setTimeout(() => { muaraeD.parentNode.querySelector('.tuile__hexa').style.filter = 'brightness(1.5)'; }, 600);
+                    setTimeout(() => { muaraeD.parentNode.querySelector('.tuile__hexa').style.removeProperty('filter'); }, 950);
                 }
                 return;
             } else {
