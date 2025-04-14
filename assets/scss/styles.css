@@ -89,6 +89,12 @@ body {
 }
 
 /* --- /RESET --- */
+* {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+
 body {
   background-color: #1e1e1e;
 }
@@ -302,6 +308,12 @@ body {
 .tuile:hover {
   transform: scale(1.05);
 }
+.tuile--hover {
+  transform: scale(1.05);
+}
+.tuile--hover .tuile__bg path {
+  fill: rgba(255, 255, 255, 0.4);
+}
 .tuile[data-id=J] .tuile__bg path {
   fill: #d8b02d;
   fill-opacity: 0.5;
@@ -390,6 +402,9 @@ body {
   cursor: pointer;
   transition: all 0.5s ease;
   transform: translate(0, 0);
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
 }
 .card::after {
   content: "";
@@ -998,6 +1013,13 @@ body {
 .deck__logo {
   height: 80px;
 }
+.deck__head {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 64px;
+}
 .deck-deckList, .deck-collectionList {
   max-width: 1540px;
   display: grid;
@@ -1014,7 +1036,7 @@ body {
   transform: translateY(-4px) scale(1.02);
 }
 .deck-deckList__ele.selected img, .deck-collectionList__ele.selected img {
-  box-shadow: 0 5px 6px 0px rgba(255, 255, 255, 0.4);
+  box-shadow: 0 5px 6px 0px rgba(255, 255, 255, 0.2);
   border-radius: 6px;
 }
 .deck-deckList__ele .pwr,
@@ -1061,6 +1083,30 @@ body {
   color: white;
   font-family: "Yatra One";
   font-size: 40px;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 64px;
+}
+.filters__group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.filters__btn {
+  border-radius: 8px;
+  display: flex;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.filters__btn--radius {
+  border-radius: 100px;
+}
+.filters__btn--selected {
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.4);
+  transform: translateY(-3px) rotate(2deg);
 }
 
 .cardGaiamotto {

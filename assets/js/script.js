@@ -225,31 +225,63 @@ function DragAnimation(e) {
     const cardDragged = this;
 
     cardDragged.classList.add('dragged');
+    cardDragged.dataset.oldX = e.clientX;
     cardDragged.dataset.originX = e.clientX;
     cardDragged.dataset.originY= e.clientY;
     cardDragged.dataset.scale = 1;
+    cardDragged.dataset.rotate = 0;
 
-    document.onmousemove = drag;
-	document.onmouseup = drop;
+    document.onmousemove = Drag;
+	document.onmouseup = Drop;
 }
 
-function drag(e) {
+
+function Drag(e) {
     const cardDragged = document.querySelector('.dragged');
     const currentScale = parseFloat(cardDragged.dataset.scale);
-    const scale = Math.max(currentScale - 0.015, .5);
+    const currentRotate = parseFloat(cardDragged.dataset.rotate);
+    const scale = Math.max(currentScale - 0.01, .5);
+    const rotate = e.clientX > parseInt(cardDragged.dataset.oldX) 
+        ? Math.min(currentRotate + 0.05, 5)
+        : Math.max(currentRotate - 0.05, -5);
 
+    cardDragged.dataset.oldX = e.clientX;
     cardDragged.dataset.scale = scale;
+    cardDragged.dataset.rotate = rotate;
     cardDragged.setAttribute(
         'style',
         `
             transition: none;
-            transform: translate(${e.clientX - parseInt(cardDragged.dataset.originX)}px, ${e.clientY - parseInt(cardDragged.dataset.originY) - 118}px) rotate(4deg) scale(${scale}) !important;
+            transform: translate(${e.clientX - parseInt(cardDragged.dataset.originX)}px, ${e.clientY - parseInt(cardDragged.dataset.originY) - 118}px) rotate(${rotate}deg) scale(${scale}) !important;
         `
     );
+
+    document.querySelector('.tuile--hover')?.classList.remove('tuile--hover')
+
+    tuiles.forEach(tuile => {
+        const rect = tuile.getBoundingClientRect();
+
+        if (
+            e.clientX >= rect.left &&
+            e.clientX <= rect.right &&
+            e.clientY >= rect.top &&
+            e.clientY <= rect.bottom
+        ) {
+            tuile.classList.add('tuile--hover');
+        }
+    });
 }
 
-function drop(e) {
+
+function Drop() {
     const cardDragged = document.querySelector('.dragged');
+
+    const selectedTuile = document.querySelector('.tuile--hover');
+    if (selectedTuile) {
+        selectedCardNode = cardDragged;
+        selectedTuile.classList.remove('tuile--hover');
+        SelectTuile(selectedTuile);
+    }
 
     cardDragged.classList.remove('dragged');
     cardDragged.setAttribute('style', '');
@@ -308,8 +340,10 @@ function NextTurn() {
 }
 
 
-function SelectTuile() {
-    const tuile = this;
+function SelectTuile(t) {
+    const tuile = this?.classList?.contains('tuile')
+        ? this
+        : t;
 
     if (tuile.dataset.id === 'J' || tuile.querySelector('[data-card]')) return;
 
@@ -334,9 +368,11 @@ function SelectTuile() {
             ) {
                 // Animation
                 if (blockByElectro) {
-                    const muaraeD = document.querySelector('.tuile__content[data-card="041"]')
-                    muaraeD.parentNode.style.background = '#d8942d81';
-                    setTimeout(() => { muaraeD.parentNode.style.removeProperty('background'); }, 1000);
+                    const muaraeD = document.querySelector('.tuile__content[data-card="041"]');
+                    muaraeD.parentNode.querySelector('.tuile__hexa').style.filter = 'brightness(2)';
+                    setTimeout(() => { muaraeD.parentNode.querySelector('.tuile__hexa').style.filter = 'brightness(.6)'; }, 200);
+                    setTimeout(() => { muaraeD.parentNode.querySelector('.tuile__hexa').style.filter = 'brightness(1.5)'; }, 600);
+                    setTimeout(() => { muaraeD.parentNode.querySelector('.tuile__hexa').style.removeProperty('filter'); }, 950);
                 }
                 return;
             } else {
@@ -694,7 +730,13 @@ function RevealPower(tuileNode, cardRevealed) {
         case '027':
             if (lastCardPlayed) {
                 const lastCardPlayedNode = document.querySelector(`.tuile__content[data-card="${lastCardPlayed.id}"]`)
-                const lastCardPlayedActualPower = lastCardPlayedNode.dataset.pwr ? parseInt(lastCardPlayedNode.dataset.pwr) : 0;
+                let lastCardPlayedActualPower = lastCardPlayedNode.dataset.pwr ? parseInt(lastCardPlayedNode.dataset.pwr) : 0;
+
+                if (currentStar === '007') lastCardPlayedActualPower += 2;
+                else if (currentStar === '009') lastCardPlayedActualPower -= 2;
+                else if (currentStar === '004') lastCardPlayedActualPower += 3;
+                else if (currentStar === '021') lastCardPlayedActualPower -= 3;
+
                 tuileContent.dataset.pwr = lastCardPlayedActualPower;
                 tuileContent.querySelector('.tuile__pwr').innerHTML = tuileContent.dataset.pwr;
             }
@@ -1424,7 +1466,14 @@ function PowerEndOfTurn() {
     }
     // --- 036
     document.querySelectorAll('.tuile__content[data-card="036"][data-claimed="false"]').forEach(trappist1F => {
-        playerHand.push(deepClone(ALL_CARDS.find(card => card.id === '036')));
+        const clone036 = deepClone(ALL_CARDS.find(card => card.id === '036'));
+
+        if (currentStar === '006') clone036.pwr += 2;
+        else if (currentStar === '008') clone036.pwr -= 2;
+        else if (currentStar === '004') clone036.pwr += 3;
+        else if (currentStar === '021') clone036.pwr -= 3;
+
+        playerHand.push(clone036);
         HtmlCards();
         trappist1F.dataset.claimed = true;
     });
@@ -1503,7 +1552,7 @@ function End() {
         UpdateHomeStats();
     }
 
-    if (allPoints >= 70 && !localDex.allCards.find(c => c.id === '072').found) {
+    if (allPoints >= 100 && !localDex.allCards.find(c => c.id === '072').found) {
         localDex.allCards.find(c => c.id === '072').found = Date.now();
         localStorage.setItem('dex', JSON.stringify(localDex));
         UpdateCollection();
@@ -1697,7 +1746,7 @@ function ShowDeck() {
         inner += `
             <li class="start-list__ele" data-id="${cardId}">
                 <img src="./assets/img/cards/${cardId}.png" alt="">
-                <p class="pwr">${ALL_CARDS.find(c => c.id === cardId).pwr ? ALL_CARDS.find(c => c.id === cardId).pwr : ''}</p>
+                <p class="pwr">${ALL_CARDS.find(c => c.id === cardId).pwr || ALL_CARDS.find(c => c.id === cardId).pwr === 0 ? ALL_CARDS.find(c => c.id === cardId).pwr : ''}</p>
                 <p class="mana">${ALL_CARDS.find(c => c.id === cardId)?.mana}</p>
             </li>
         `;
@@ -2274,13 +2323,16 @@ function InitChangeDeck() {
         cardNode.dataset.id = cardId;
         cardNode.innerHTML = `
             <img src="./assets/img/cards/${cardId}.png" alt="">
-            <p class="pwr">${ALL_CARDS.find(c => c.id === cardId).pwr ? ALL_CARDS.find(c => c.id === cardId).pwr : ''}</p>
+            <p class="pwr">${ALL_CARDS.find(c => c.id === cardId).pwr || ALL_CARDS.find(c => c.id === cardId).pwr === 0 ? ALL_CARDS.find(c => c.id === cardId).pwr : ''}</p>
             <p class="mana">${ALL_CARDS.find(c => c.id === cardId)?.mana}</p>
         `;
 
         deckList.appendChild(cardNode);
         cardNode.addEventListener('click', () => {
-            cardNode.classList.toggle('selected');
+            const oldSelected = deckList.querySelector('.deck-deckList__ele.selected');
+            oldSelected?.classList.remove('selected');
+
+            if (oldSelected !== cardNode) cardNode.classList.add('selected');
 
             if (cardNode.classList.contains('selected')) {
                 deckRemove = cardNode.dataset.id;
@@ -2306,7 +2358,7 @@ function InitChangeDeck() {
     const allCardsFound = localDex.allCards.filter(card => card.found && !localDex.defaultDeck.includes(card.id) && ALL_CARDS.find(c => c.id === card.id).playable);
     allCardsFound.forEach(card => {
         const cardNode = document.createElement('li');
-        cardNode.classList.add('deck-deckList__ele');
+        cardNode.classList.add('deck-collectionList__ele');
         cardNode.dataset.id = card.id;
         cardNode.innerHTML = `
             <img src="./assets/img/cards/${card.id}.png" alt="">
@@ -2316,7 +2368,10 @@ function InitChangeDeck() {
 
         collectionList.appendChild(cardNode);
         cardNode.addEventListener('click', () => {
-            cardNode.classList.toggle('selected');
+            const oldSelected = collectionList.querySelector('.deck-collectionList__ele.selected');
+            oldSelected?.classList.remove('selected');
+
+            if (oldSelected !== cardNode) cardNode.classList.add('selected');
 
             if (cardNode.classList.contains('selected')) {
                 deckAdd = cardNode.dataset.id;
@@ -2336,11 +2391,13 @@ function InitChangeDeck() {
             } else deckAdd = '';
         })
     });
+
+    InitFilters();
 }
 
 
 function InitLocalStorage() {
-    const localDex = JSON.parse(localStorage.getItem('dex')) || {};
+    let localDex = JSON.parse(localStorage.getItem('dex')) || {};
 
     if (!localDex.version) localDex.version = VERSION;
 
@@ -2354,6 +2411,8 @@ function InitLocalStorage() {
             }
         });
     } else if (localDex.version !== VERSION) {
+        localDex = RevertGaiamotto(localDex);
+
         localDex.version = VERSION;
         const oldLd = localDex.allCards
         localDex.allCards = ALL_CARDS.map((card, i) => {
@@ -2370,9 +2429,10 @@ function InitLocalStorage() {
     }
 
     // Specials cards
+    localDex = RevertGaiamotto(localDex);
     if (
         localDex.maxPointsScored &&
-        localDex.maxPointsScored >= 70 &&
+        localDex.maxPointsScored >= 100 &&
         !localDex.allCards.find(c => c.id === '072').found
     ) {
         localDex.allCards.find(c => c.id === '072').found = Date.now();
@@ -2393,6 +2453,32 @@ function InitLocalStorage() {
     }
 
     localStorage.setItem('dex', JSON.stringify(localDex));
+}
+
+
+function RevertGaiamotto(localDex) {
+    if (
+        localDex.maxPointsScored < 100 &&
+        localDex.allCards.find(c => c.id === '072').found
+    ) {
+        ['072', '073', '074', '075', '076'].forEach(id => {
+            const card = localDex.allCards.find(c => c.id === id);
+            if (card) card.found = false;
+        });
+
+        if (localDex.defaultDeck.includes('072')) {
+            const replacementCard = ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012']
+                .find(cardId => !localDex.defaultDeck.includes(cardId));
+
+            if (replacementCard) {
+                localDex.defaultDeck = localDex.defaultDeck.map(cardId => 
+                    cardId === '072' ? replacementCard : cardId
+                );
+            }
+        }
+    }
+
+    return localDex;
 }
 
 
@@ -2456,5 +2542,108 @@ function PowerRecalculation(parentStart, parentFinish) {
     });
     parentFinishNeighbors.forEach(neighbor => {
         if (neighbor.dataset.pwr && neighbor.type === TYPES[0]) AddToTuile(neighbor, orbitRegulation);
+    });
+}
+
+
+function InitFilters() {
+    const filters = document.querySelectorAll('.deck .filters__btn');
+    filters.forEach(filter => filter.addEventListener('click', SelectFilter));
+}
+
+
+function SelectFilter() {
+    const btn = this;
+    const oldSelectedInSameType = document.querySelector(`.deck .filters__btn[data-data="${btn.dataset.data}"].filters__btn--selected`);
+    oldSelectedInSameType?.classList.remove('filters__btn--selected');
+    if (btn !== oldSelectedInSameType) btn.classList.add('filters__btn--selected');
+
+    FilterAction();
+}
+
+
+function FilterAction() {
+    const allCollectionCards = document.querySelectorAll('.deck-collectionList__ele');
+    allCollectionCards.forEach(card => card.classList.remove('hide'));
+
+    const activeFilters = document.querySelectorAll('.deck .filters__btn--selected');
+    activeFilters.forEach(filter => {
+        const filterData = filter.dataset.data;
+        const filterValue = filter.dataset.value;
+
+        if (filterData === 'type') {
+            if (filterValue === 'lune') {
+                allCollectionCards.forEach(card => {
+                    if (ALL_CARDS.find(c => c.id === card.dataset.id).type !== TYPES[1]) card.classList.add('hide');
+                });
+
+                return;
+            } else if (filterValue === 'planet') {
+                allCollectionCards.forEach(card => {
+                    if (ALL_CARDS.find(c => c.id === card.dataset.id).type !== TYPES[0]) card.classList.add('hide');
+                });
+            }
+        }
+
+        if (filterData === 'element') {
+            switch (filterValue) {
+                case 'feu':
+                    allCollectionCards.forEach(card => {
+                        if (!ALL_CARDS.find(c => c.id === card.dataset.id)?.element?.includes(ELEMENTS[0])) card.classList.add('hide');
+                        if (card.dataset.id === '009') card.classList.remove('hide');
+                    });
+                    break;
+
+                case 'eau':
+                    allCollectionCards.forEach(card => {
+                        if (!ALL_CARDS.find(c => c.id === card.dataset.id)?.element?.includes(ELEMENTS[1])) card.classList.add('hide');
+                        if (card.dataset.id === '010') card.classList.remove('hide');
+                    });
+                    break;
+
+                case 'air':
+                    allCollectionCards.forEach(card => {
+                        if (!ALL_CARDS.find(c => c.id === card.dataset.id)?.element?.includes(ELEMENTS[2])) card.classList.add('hide');
+                        if (card.dataset.id === '011') card.classList.remove('hide');
+                    });
+                    break;
+
+                case 'terre':
+                    allCollectionCards.forEach(card => {
+                        if (!ALL_CARDS.find(c => c.id === card.dataset.id)?.element?.includes(ELEMENTS[3])) card.classList.add('hide');
+                        if (card.dataset.id === '012') card.classList.remove('hide');
+                    });
+                    break;
+            
+                default:
+                    break;
+            }
+        }
+
+        if (filterData === 'nature') {
+            console.log(filterValue);
+            switch (filterValue) {
+                case 'tellurique':
+                    allCollectionCards.forEach(card => {
+                        if (ALL_CARDS.find(c => c.id === card.dataset.id)?.nature !== NATURES[0]) card.classList.add('hide');
+                        if (card.dataset.id === '013') card.classList.remove('hide');
+                    });
+                    break;
+                case 'gazeuse':
+                    allCollectionCards.forEach(card => {
+                        if (ALL_CARDS.find(c => c.id === card.dataset.id)?.nature !== NATURES[1]) card.classList.add('hide');
+                        if (card.dataset.id === '014') card.classList.remove('hide');
+                    });
+                    break;
+                case 'naine':
+                    allCollectionCards.forEach(card => {
+                        if (ALL_CARDS.find(c => c.id === card.dataset.id)?.nature !== NATURES[2]) card.classList.add('hide');
+                    });
+                    break;
+            
+                default:
+                    break;
+            }
+        }
     });
 }
