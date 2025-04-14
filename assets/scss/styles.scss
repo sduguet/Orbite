@@ -1066,6 +1066,7 @@ body {
 }
 
 .deck {
+	min-height: 120vh;
 	padding: 32px 0 64px;
 	display: flex;
 	flex-direction: column;
@@ -1104,16 +1105,6 @@ body {
 			cursor: pointer;
 			transition: transform .3s ease;
 
-			&.selected {
-				transform: translateY(-4px) scale(1.02);
-
-				img {
-					-webkit-box-shadow: 0 5px 6px 0px rgba(255, 255, 255, 0.2);
-					box-shadow: 0 5px 6px 0px rgba(255, 255, 255, 0.2);
-					border-radius: 6px;
-				}
-			}
-
 			.pwr,
 			.mana {
 				width: 60px;
@@ -1137,6 +1128,56 @@ body {
 				right: 9px;
 			}
 		}
+	}
+	&-deckList {
+
+		&__ele {
+
+			&.hop {
+				animation: shake 0.5s infinite;
+			}
+		}
+	}
+
+	&-collectionList {
+
+		&__ele {
+
+			&::after {
+				content: '';
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0, 0, 0, 0.25);
+				position: absolute;
+				top: 0;
+				left: 0;
+				opacity: 0;
+				transition: all .2s ease;
+			}
+
+			&.selected {
+	
+				&::after {
+					opacity: 1;
+				}
+	
+				.replace {
+					z-index: 1;
+					transform: translate(-50%, -40px);
+					opacity: 1;
+				}
+			}
+		}
+
+	}
+
+	.replace {
+		position: absolute;
+		left: 50%;
+		bottom: 0;
+		transform: translate(-50%, 0);
+		opacity: 0;
+		transition: all .3s ease;
 	}
 
 	&__group {
@@ -1268,4 +1309,18 @@ body {
 	box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
 	opacity: 0;
 	pointer-events: none;
+}
+
+@keyframes shake {
+	0% { transform: translate(1px, 1px) rotate(0deg); }
+	10% { transform: translate(-1px, -2px) rotate(-1deg); }
+	20% { transform: translate(-3px, 0px) rotate(1deg); }
+	30% { transform: translate(3px, 2px) rotate(0deg); }
+	40% { transform: translate(1px, -1px) rotate(1deg); }
+	50% { transform: translate(-1px, 2px) rotate(-1deg); }
+	60% { transform: translate(-3px, -1px) rotate(0deg); }
+	70% { transform: translate(3px, -2px) rotate(-1deg); }
+	80% { transform: translate(-1px, -1px) rotate(1deg); }
+	90% { transform: translate(1px, -2px) rotate(0deg); }
+	100% { transform: translate(1px, -2px) rotate(-1deg); }
 }

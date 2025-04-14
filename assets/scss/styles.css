@@ -998,6 +998,7 @@ body {
 }
 
 .deck {
+  min-height: 120vh;
   padding: 32px 0 64px;
   display: flex;
   flex-direction: column;
@@ -1032,13 +1033,6 @@ body {
   cursor: pointer;
   transition: transform 0.3s ease;
 }
-.deck-deckList__ele.selected, .deck-collectionList__ele.selected {
-  transform: translateY(-4px) scale(1.02);
-}
-.deck-deckList__ele.selected img, .deck-collectionList__ele.selected img {
-  box-shadow: 0 5px 6px 0px rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
-}
 .deck-deckList__ele .pwr,
 .deck-deckList__ele .mana, .deck-collectionList__ele .pwr,
 .deck-collectionList__ele .mana {
@@ -1059,6 +1053,36 @@ body {
   font-family: "Yatra One";
   top: 15px;
   right: 9px;
+}
+.deck-deckList__ele.hop {
+  animation: shake 0.5s infinite;
+}
+.deck-collectionList__ele::after {
+  content: "";
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.25);
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+.deck-collectionList__ele.selected::after {
+  opacity: 1;
+}
+.deck-collectionList__ele.selected .replace {
+  z-index: 1;
+  transform: translate(-50%, -40px);
+  opacity: 1;
+}
+.deck .replace {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, 0);
+  opacity: 0;
+  transition: all 0.3s ease;
 }
 .deck__group {
   margin-top: 64px;
@@ -1177,4 +1201,40 @@ body {
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
   opacity: 0;
   pointer-events: none;
+}
+
+@keyframes shake {
+  0% {
+    transform: translate(1px, 1px) rotate(0deg);
+  }
+  10% {
+    transform: translate(-1px, -2px) rotate(-1deg);
+  }
+  20% {
+    transform: translate(-3px, 0px) rotate(1deg);
+  }
+  30% {
+    transform: translate(3px, 2px) rotate(0deg);
+  }
+  40% {
+    transform: translate(1px, -1px) rotate(1deg);
+  }
+  50% {
+    transform: translate(-1px, 2px) rotate(-1deg);
+  }
+  60% {
+    transform: translate(-3px, -1px) rotate(0deg);
+  }
+  70% {
+    transform: translate(3px, -2px) rotate(-1deg);
+  }
+  80% {
+    transform: translate(-1px, -1px) rotate(1deg);
+  }
+  90% {
+    transform: translate(1px, -2px) rotate(0deg);
+  }
+  100% {
+    transform: translate(1px, -2px) rotate(-1deg);
+  }
 }/*# sourceMappingURL=styles.css.map */

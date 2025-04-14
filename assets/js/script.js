@@ -2346,9 +2346,6 @@ function InitChangeDeck() {
                     deckRemove = '';
 
                     InitChangeDeck();
-                    setTimeout(() => {
-                        window.scroll({ top: 150, behavior: "smooth" });
-                    }, 50);
                 }
             } else deckRemove = '';
         })
@@ -2365,31 +2362,26 @@ function InitChangeDeck() {
             <img src="./assets/img/cards/${card.id}.png" alt="">
             <p class="pwr">${ALL_CARDS.find(c => c.id === card.id).pwr || ALL_CARDS.find(c => c.id === card.id).pwr === 0 ? ALL_CARDS.find(c => c.id === card.id).pwr : ''}</p>
             <p class="mana">${ALL_CARDS.find(c => c.id === card.id)?.mana}</p>
+            <p class="replace button-29">Utiliser</p>
         `;
 
         collectionList.appendChild(cardNode);
-        cardNode.addEventListener('click', () => {
-            const oldSelected = collectionList.querySelector('.deck-collectionList__ele.selected');
-            oldSelected?.classList.remove('selected');
-
-            if (oldSelected !== cardNode) cardNode.classList.add('selected');
-
-            if (cardNode.classList.contains('selected')) {
+        cardNode.addEventListener('click', (e) => {
+            if (e.target.classList.contains('replace')) {
                 deckAdd = cardNode.dataset.id;
+                window.scroll({ top: 150, behavior: "smooth" });
 
-                if (deckRemove) {
-                    localDex.defaultDeck[localDex.defaultDeck.indexOf(deckRemove)] = deckAdd;
-                    localStorage.setItem('dex', JSON.stringify(localDex));
-
-                    deckAdd = '';
-                    deckRemove = '';
-
-                    InitChangeDeck();
-                    setTimeout(() => {
-                        window.scroll({ top: 150, behavior: "smooth" });
-                    }, 50);
+                document.querySelectorAll('.deck-deckList__ele').forEach(c => {
+                    c.classList.add('hop');
+                })
+            } else {
+                const oldSelected = collectionList.querySelector('.deck-collectionList__ele.selected');
+                oldSelected?.classList.remove('selected');
+    
+                if (oldSelected !== cardNode) {
+                    cardNode.classList.add('selected');
                 }
-            } else deckAdd = '';
+            }
         })
     });
 
