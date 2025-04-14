@@ -368,11 +368,11 @@ function SelectTuile(t) {
             ) {
                 // Animation
                 if (blockByElectro) {
-                    const muaraeD = document.querySelector('.tuile__content[data-card="041"]');
-                    muaraeD.parentNode.querySelector('.tuile__hexa').style.filter = 'brightness(2)';
-                    setTimeout(() => { muaraeD.parentNode.querySelector('.tuile__hexa').style.filter = 'brightness(.6)'; }, 200);
-                    setTimeout(() => { muaraeD.parentNode.querySelector('.tuile__hexa').style.filter = 'brightness(1.5)'; }, 600);
-                    setTimeout(() => { muaraeD.parentNode.querySelector('.tuile__hexa').style.removeProperty('filter'); }, 950);
+                    const muaraeDHexa = document.querySelector('.tuile:has(.tuile__content[data-card="041"]) .tuile__hexa');
+                    muaraeDHexa.style.filter = 'brightness(2)';
+                    setTimeout(() => { muaraeDHexa.style.filter = 'brightness(.6)'; }, 200);
+                    setTimeout(() => { muaraeDHexa.style.filter = 'brightness(1.5)'; }, 600);
+                    setTimeout(() => { muaraeDHexa.style.removeProperty('filter'); }, 950);
                 }
                 return;
             } else {
@@ -2345,10 +2345,9 @@ function InitChangeDeck() {
                     deckAdd = '';
                     deckRemove = '';
 
+                    document.querySelector('.deck .deck__cancel').classList.add('hide');
+
                     InitChangeDeck();
-                    setTimeout(() => {
-                        window.scroll({ top: 150, behavior: "smooth" });
-                    }, 50);
                 }
             } else deckRemove = '';
         })
@@ -2365,31 +2364,23 @@ function InitChangeDeck() {
             <img src="./assets/img/cards/${card.id}.png" alt="">
             <p class="pwr">${ALL_CARDS.find(c => c.id === card.id).pwr || ALL_CARDS.find(c => c.id === card.id).pwr === 0 ? ALL_CARDS.find(c => c.id === card.id).pwr : ''}</p>
             <p class="mana">${ALL_CARDS.find(c => c.id === card.id)?.mana}</p>
+            <p class="replace button-29">Utiliser</p>
         `;
 
         collectionList.appendChild(cardNode);
-        cardNode.addEventListener('click', () => {
-            const oldSelected = collectionList.querySelector('.deck-collectionList__ele.selected');
-            oldSelected?.classList.remove('selected');
-
-            if (oldSelected !== cardNode) cardNode.classList.add('selected');
-
-            if (cardNode.classList.contains('selected')) {
+        cardNode.addEventListener('click', (e) => {
+            if (e.target.classList.contains('replace')) {
                 deckAdd = cardNode.dataset.id;
+                window.scroll({ top: 178, behavior: "smooth" });
+                document.querySelector('.deck .deck__cancel').classList.remove('hide');
 
-                if (deckRemove) {
-                    localDex.defaultDeck[localDex.defaultDeck.indexOf(deckRemove)] = deckAdd;
-                    localStorage.setItem('dex', JSON.stringify(localDex));
-
-                    deckAdd = '';
-                    deckRemove = '';
-
-                    InitChangeDeck();
-                    setTimeout(() => {
-                        window.scroll({ top: 150, behavior: "smooth" });
-                    }, 50);
-                }
-            } else deckAdd = '';
+                document.querySelectorAll('.deck-deckList__ele').forEach(c => c.classList.add('shake'));
+            } else {
+                const oldSelected = collectionList.querySelector('.deck-collectionList__ele.selected');
+                oldSelected?.classList.remove('selected');
+    
+                if (oldSelected !== cardNode) cardNode.classList.add('selected');
+            }
         })
     });
 
@@ -2550,6 +2541,19 @@ function PowerRecalculation(parentStart, parentFinish) {
 function InitFilters() {
     const filters = document.querySelectorAll('.deck .filters__btn');
     filters.forEach(filter => filter.addEventListener('click', SelectFilter));
+
+    const btnCancel = document.querySelector('.deck .deck__cancel');
+    btnCancel.addEventListener('click', CancelSelectedCard);
+}
+
+
+function CancelSelectedCard() {
+    document.querySelectorAll('.shake').forEach(c => c.classList.remove('shake'));
+    document.querySelector('.deck-collectionList__ele.selected')?.classList.remove('selected');
+    document.querySelector('.deck .deck__cancel').classList.add('hide');
+    deckAdd = '';
+    deckRemove = '';
+    window.scroll({ top: 1050, behavior: "smooth" });
 }
 
 

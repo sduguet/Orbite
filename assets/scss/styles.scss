@@ -1066,6 +1066,7 @@ body {
 }
 
 .deck {
+	min-height: 120vh;
 	padding: 32px 0 64px;
 	display: flex;
 	flex-direction: column;
@@ -1104,16 +1105,6 @@ body {
 			cursor: pointer;
 			transition: transform .3s ease;
 
-			&.selected {
-				transform: translateY(-4px) scale(1.02);
-
-				img {
-					-webkit-box-shadow: 0 5px 6px 0px rgba(255, 255, 255, 0.2);
-					box-shadow: 0 5px 6px 0px rgba(255, 255, 255, 0.2);
-					border-radius: 6px;
-				}
-			}
-
 			.pwr,
 			.mana {
 				width: 60px;
@@ -1137,6 +1128,68 @@ body {
 				right: 9px;
 			}
 		}
+	}
+	&-deckList {
+
+		&__ele {
+
+			&.shake {
+				animation: shake 1.2s infinite;
+			}
+
+			&:nth-child(1) { animation-delay: 0s; }
+			&:nth-child(2) { animation-delay: 0.1s; }
+			&:nth-child(3) { animation-delay: 0.2s; }
+			&:nth-child(4) { animation-delay: 0.05s; }
+			&:nth-child(5) { animation-delay: 0.15s; }
+			&:nth-child(6) { animation-delay: 0.08s; }
+			&:nth-child(7) { animation-delay: 0.12s; }
+			&:nth-child(8) { animation-delay: 0.18s; }
+			&:nth-child(9) { animation-delay: 0.22s; }
+			&:nth-child(10) { animation-delay: 0.09s; }
+			&:nth-child(11) { animation-delay: 0.13s; }
+			&:nth-child(12) { animation-delay: 0.17s; }
+		}
+	}
+
+	&-collectionList {
+
+		&__ele {
+
+			&::after {
+				content: '';
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0, 0, 0, 0.25);
+				position: absolute;
+				top: 0;
+				left: 0;
+				opacity: 0;
+				transition: all .2s ease;
+			}
+
+			&.selected {
+	
+				&::after {
+					opacity: 1;
+				}
+	
+				.replace {
+					z-index: 1;
+					transform: translate(-50%, -40px);
+					opacity: 1;
+				}
+			}
+		}
+	}
+
+	.replace {
+		position: absolute;
+		left: 50%;
+		bottom: 0;
+		transform: translate(-50%, 0);
+		opacity: 0;
+		transition: all .3s ease;
 	}
 
 	&__group {
@@ -1164,6 +1217,18 @@ body {
 		color: white;
 		font-family: 'Yatra One';
 		font-size: 40px;
+	}
+
+	&__cancel {
+		border-radius: 8px;
+		padding: 8px 16px;
+		background-color: #FFF;
+		box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.4);
+		text-transform: uppercase;
+		font-size: 20px;
+		font-weight: 600;
+		text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+		cursor: pointer;
 	}
 }
 
@@ -1269,3 +1334,15 @@ body {
 	opacity: 0;
 	pointer-events: none;
 }
+
+@keyframes shake {
+	0%, 100% {
+		transform: translateX(0) rotate(0deg);
+	  }
+	  10%, 30%, 50%, 70%, 90% {
+		transform: translateX(-1px) rotate(-0.5deg);
+	  }
+	  20%, 40%, 60%, 80% {
+		transform: translateX(1px) rotate(0.5deg);
+	  }
+  }
