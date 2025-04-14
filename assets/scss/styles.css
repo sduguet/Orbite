@@ -1054,8 +1054,44 @@ body {
   top: 15px;
   right: 9px;
 }
-.deck-deckList__ele.hop {
-  animation: shake 0.5s infinite;
+.deck-deckList__ele.shake {
+  animation: shake 1.2s infinite;
+}
+.deck-deckList__ele:nth-child(1) {
+  animation-delay: 0s;
+}
+.deck-deckList__ele:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.deck-deckList__ele:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.deck-deckList__ele:nth-child(4) {
+  animation-delay: 0.05s;
+}
+.deck-deckList__ele:nth-child(5) {
+  animation-delay: 0.15s;
+}
+.deck-deckList__ele:nth-child(6) {
+  animation-delay: 0.08s;
+}
+.deck-deckList__ele:nth-child(7) {
+  animation-delay: 0.12s;
+}
+.deck-deckList__ele:nth-child(8) {
+  animation-delay: 0.18s;
+}
+.deck-deckList__ele:nth-child(9) {
+  animation-delay: 0.22s;
+}
+.deck-deckList__ele:nth-child(10) {
+  animation-delay: 0.09s;
+}
+.deck-deckList__ele:nth-child(11) {
+  animation-delay: 0.13s;
+}
+.deck-deckList__ele:nth-child(12) {
+  animation-delay: 0.17s;
 }
 .deck-collectionList__ele::after {
   content: "";
@@ -1107,6 +1143,17 @@ body {
   color: white;
   font-family: "Yatra One";
   font-size: 40px;
+}
+.deck__cancel {
+  border-radius: 8px;
+  padding: 8px 16px;
+  background-color: #FFF;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.4);
+  text-transform: uppercase;
+  font-size: 20px;
+  font-weight: 600;
+  text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
 }
 
 .filters {
@@ -1204,37 +1251,13 @@ body {
 }
 
 @keyframes shake {
-  0% {
-    transform: translate(1px, 1px) rotate(0deg);
+  0%, 100% {
+    transform: translateX(0) rotate(0deg);
   }
-  10% {
-    transform: translate(-1px, -2px) rotate(-1deg);
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-1px) rotate(-0.5deg);
   }
-  20% {
-    transform: translate(-3px, 0px) rotate(1deg);
-  }
-  30% {
-    transform: translate(3px, 2px) rotate(0deg);
-  }
-  40% {
-    transform: translate(1px, -1px) rotate(1deg);
-  }
-  50% {
-    transform: translate(-1px, 2px) rotate(-1deg);
-  }
-  60% {
-    transform: translate(-3px, -1px) rotate(0deg);
-  }
-  70% {
-    transform: translate(3px, -2px) rotate(-1deg);
-  }
-  80% {
-    transform: translate(-1px, -1px) rotate(1deg);
-  }
-  90% {
-    transform: translate(1px, -2px) rotate(0deg);
-  }
-  100% {
-    transform: translate(1px, -2px) rotate(-1deg);
+  20%, 40%, 60%, 80% {
+    transform: translateX(1px) rotate(0.5deg);
   }
 }/*# sourceMappingURL=styles.css.map */

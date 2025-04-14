@@ -368,11 +368,11 @@ function SelectTuile(t) {
             ) {
                 // Animation
                 if (blockByElectro) {
-                    const muaraeD = document.querySelector('.tuile__content[data-card="041"]');
-                    muaraeD.parentNode.querySelector('.tuile__hexa').style.filter = 'brightness(2)';
-                    setTimeout(() => { muaraeD.parentNode.querySelector('.tuile__hexa').style.filter = 'brightness(.6)'; }, 200);
-                    setTimeout(() => { muaraeD.parentNode.querySelector('.tuile__hexa').style.filter = 'brightness(1.5)'; }, 600);
-                    setTimeout(() => { muaraeD.parentNode.querySelector('.tuile__hexa').style.removeProperty('filter'); }, 950);
+                    const muaraeDHexa = document.querySelector('.tuile:has(.tuile__content[data-card="041"]) .tuile__hexa');
+                    muaraeDHexa.style.filter = 'brightness(2)';
+                    setTimeout(() => { muaraeDHexa.style.filter = 'brightness(.6)'; }, 200);
+                    setTimeout(() => { muaraeDHexa.style.filter = 'brightness(1.5)'; }, 600);
+                    setTimeout(() => { muaraeDHexa.style.removeProperty('filter'); }, 950);
                 }
                 return;
             } else {
@@ -2345,6 +2345,8 @@ function InitChangeDeck() {
                     deckAdd = '';
                     deckRemove = '';
 
+                    document.querySelector('.deck .deck__cancel').classList.add('hide');
+
                     InitChangeDeck();
                 }
             } else deckRemove = '';
@@ -2369,18 +2371,15 @@ function InitChangeDeck() {
         cardNode.addEventListener('click', (e) => {
             if (e.target.classList.contains('replace')) {
                 deckAdd = cardNode.dataset.id;
-                window.scroll({ top: 150, behavior: "smooth" });
+                window.scroll({ top: 178, behavior: "smooth" });
+                document.querySelector('.deck .deck__cancel').classList.remove('hide');
 
-                document.querySelectorAll('.deck-deckList__ele').forEach(c => {
-                    c.classList.add('hop');
-                })
+                document.querySelectorAll('.deck-deckList__ele').forEach(c => c.classList.add('shake'));
             } else {
                 const oldSelected = collectionList.querySelector('.deck-collectionList__ele.selected');
                 oldSelected?.classList.remove('selected');
     
-                if (oldSelected !== cardNode) {
-                    cardNode.classList.add('selected');
-                }
+                if (oldSelected !== cardNode) cardNode.classList.add('selected');
             }
         })
     });
@@ -2542,6 +2541,19 @@ function PowerRecalculation(parentStart, parentFinish) {
 function InitFilters() {
     const filters = document.querySelectorAll('.deck .filters__btn');
     filters.forEach(filter => filter.addEventListener('click', SelectFilter));
+
+    const btnCancel = document.querySelector('.deck .deck__cancel');
+    btnCancel.addEventListener('click', CancelSelectedCard);
+}
+
+
+function CancelSelectedCard() {
+    document.querySelectorAll('.shake').forEach(c => c.classList.remove('shake'));
+    document.querySelector('.deck-collectionList__ele.selected')?.classList.remove('selected');
+    document.querySelector('.deck .deck__cancel').classList.add('hide');
+    deckAdd = '';
+    deckRemove = '';
+    window.scroll({ top: 1050, behavior: "smooth" });
 }
 
 
