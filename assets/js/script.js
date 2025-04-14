@@ -1762,6 +1762,7 @@ function InitializationGame() {
 
     ClearTuiles();
     SetHtmlInHexagon(document.querySelector('.tuile--sun .tuile__content'), STARS.find(s => s.id === currentStar));
+    UpdateCurrentAllPointsScored();
 
     history = {};
     playerDeck = [];
