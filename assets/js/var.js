@@ -521,7 +521,6 @@ const ALL_CARDS = [
         'name': 'Hécate',
         'type': TYPES[1],
         'mana': 0,
-        'pwr': 0,
         'desc': `[Continu] -4 aux planètes situées à son orbite`,
         'offrande': false,
         'playable': false,
