@@ -498,6 +498,7 @@ function GetLastCardPlayed() {
 
 
 function RevealPower(tuileNode, cardRevealed) {
+    const localDex = JSON.parse(localStorage.getItem('dex')) || {};
     const neighborsNode = GetAllNeighbors(tuileNode);
     const tuileContent = tuileNode.querySelector('.tuile__content');
     const lastCardPlayed = GetLastCardPlayed() ? ALL_CARDS.find(card => card.id === GetLastCardPlayed()) : null;
@@ -649,6 +650,11 @@ function RevealPower(tuileNode, cardRevealed) {
 
         case '017':
             playerDeck.push(deepClone(ALL_CARDS.find(card => card.id === '018')));
+
+            if (!localDex.allCards.find(c => c.id === '018').found) {
+                localDex.allCards.find(c => c.id === '018').found = Date.now();
+                localStorage.setItem('dex', JSON.stringify(localDex));
+            }
             break;
 
         case '018':
@@ -822,7 +828,12 @@ function RevealPower(tuileNode, cardRevealed) {
             const allTuilesVoid = Array.from(document.querySelectorAll('.tuile:not(.tuile--sun) .tuile__content:not([data-card]):not(.obstructed)'));
             const randIndex = randomBetween(0, allTuilesVoid.length - 1);
             SetHtmlInHexagon(allTuilesVoid[randIndex], deepClone(ALL_CARDS.find(card => card.id === '045')));
-            RevealPower(allTuilesVoid[randIndex].parentNode, deepClone(ALL_CARDS.find(card => card.id === '045')))
+            RevealPower(allTuilesVoid[randIndex].parentNode, deepClone(ALL_CARDS.find(card => card.id === '045')));
+
+            if (!localDex.allCards.find(c => c.id === '045').found) {
+                localDex.allCards.find(c => c.id === '045').found = Date.now();
+                localStorage.setItem('dex', JSON.stringify(localDex));
+            }
             break;
 
         case '045':
@@ -841,6 +852,10 @@ function RevealPower(tuileNode, cardRevealed) {
 
         case '047':
             playerHand.push(deepClone(ALL_CARDS.find(card => card.id === '048')));
+            if (!localDex.allCards.find(c => c.id === '048').found) {
+                localDex.allCards.find(c => c.id === '048').found = Date.now();
+                localStorage.setItem('dex', JSON.stringify(localDex));
+            }
             HtmlCards();
             break;
 
@@ -2402,7 +2417,7 @@ function InitLocalStorage() {
                 'found': i <= 11 ? Date.now() : false
             }
         });
-    } else if (localDex.version !== VERSION) {
+    } else {
         localDex = RevertGaiamotto(localDex);
 
         localDex.version = VERSION;
@@ -2413,9 +2428,7 @@ function InitLocalStorage() {
                 'found':
                     oldLd.find(c => c.id === card.id)?.found
                         ? oldLd.find(c => c.id === card.id).found
-                        : i <= 11
-                            ? Date.now()
-                            : false,
+                        : false,
             }
         });
     }
@@ -2451,7 +2464,7 @@ function InitLocalStorage() {
 function RevertGaiamotto(localDex) {
     if (
         localDex.maxPointsScored < 100 &&
-        localDex.allCards.find(c => c.id === '072').found
+        localDex.allCards.find(c => c.id === '072')?.found
     ) {
         ['072', '073', '074', '075', '076'].forEach(id => {
             const card = localDex.allCards.find(c => c.id === id);
