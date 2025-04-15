@@ -34,6 +34,7 @@ let currentStar;
 let pointsToScore;
 let deckAdd;
 let deckRemove;
+let maxCardsInHand;
 
 Init();
 function Init() {
@@ -134,7 +135,7 @@ function SetPlayerHand() {
 
 
 function DrawCard() {
-    if (playerDeck.length > 0 && playerHand.length < 6) {
+    if (playerDeck.length > 0 && playerHand.length < maxCardsInHand) {
         let randomIndex = randomBetween(0, playerDeck.length - 1);
 
         let infinity = 0;
@@ -320,16 +321,18 @@ function NextTurn() {
 
         const proximaC = playerDeck.find(card => card.id === '030');
         const proximaD = playerDeck.find(card => card.id === '031');
-        if (currentTurn === 2 && proximaC) {
-            playerDeck = playerDeck.filter(card => card.id !== proximaC.id);
-            playerHand.push(deepClone(proximaC));
-            HtmlCards();
-        } else if (currentTurn === 6 && proximaD) {
-            playerDeck = playerDeck.filter(card => card.id !== proximaD.id);
-            playerHand.push(deepClone(proximaD));
-            HtmlCards();
-        } else {
-            DrawCard();
+        if (playerHand.length < maxCardsInHand) {
+            if (currentTurn === 2 && proximaC) {
+                playerDeck = playerDeck.filter(card => card.id !== proximaC.id);
+                playerHand.push(deepClone(proximaC));
+                HtmlCards();
+            } else if (currentTurn === 6 && proximaD) {
+                playerDeck = playerDeck.filter(card => card.id !== proximaD.id);
+                playerHand.push(deepClone(proximaD));
+                HtmlCards();
+            } else {
+                DrawCard();
+            }
         }
 
         btnNextTurn.dataset.front = `${currentTurn}/${nbTurnMax}`
@@ -1753,6 +1756,7 @@ function InitializationGame() {
     manaMaxBonus = 0;
     cardsDestroyToReset = [];
     btnCd = 0;
+    maxCardsInHand = 6;
     popupOffrande.querySelector('.offrande__moins').innerHTML = '';
     popupOffrande.querySelector('.offrande__moins').classList.add('hide');
     popupOffrande.querySelector('.offrande__plus').innerHTML = '';
