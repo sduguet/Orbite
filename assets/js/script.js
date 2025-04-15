@@ -34,6 +34,7 @@ let currentStar;
 let pointsToScore;
 let deckAdd;
 let deckRemove;
+let maxCardsInHand;
 
 Init();
 function Init() {
@@ -134,7 +135,7 @@ function SetPlayerHand() {
 
 
 function DrawCard() {
-    if (playerDeck.length > 0 && playerHand.length < 6) {
+    if (playerDeck.length > 0 && playerHand.length < maxCardsInHand) {
         let randomIndex = randomBetween(0, playerDeck.length - 1);
 
         let infinity = 0;
@@ -320,16 +321,18 @@ function NextTurn() {
 
         const proximaC = playerDeck.find(card => card.id === '030');
         const proximaD = playerDeck.find(card => card.id === '031');
-        if (currentTurn === 2 && proximaC) {
-            playerDeck = playerDeck.filter(card => card.id !== proximaC.id);
-            playerHand.push(deepClone(proximaC));
-            HtmlCards();
-        } else if (currentTurn === 6 && proximaD) {
-            playerDeck = playerDeck.filter(card => card.id !== proximaD.id);
-            playerHand.push(deepClone(proximaD));
-            HtmlCards();
-        } else {
-            DrawCard();
+        if (playerHand.length < maxCardsInHand) {
+            if (currentTurn === 2 && proximaC) {
+                playerDeck = playerDeck.filter(card => card.id !== proximaC.id);
+                playerHand.push(deepClone(proximaC));
+                HtmlCards();
+            } else if (currentTurn === 6 && proximaD) {
+                playerDeck = playerDeck.filter(card => card.id !== proximaD.id);
+                playerHand.push(deepClone(proximaD));
+                HtmlCards();
+            } else {
+                DrawCard();
+            }
         }
 
         btnNextTurn.dataset.front = `${currentTurn}/${nbTurnMax}`
@@ -803,6 +806,7 @@ function RevealPower(tuileNode, cardRevealed) {
                             svg.style.filter = 'invert(0)';
                             svg.style.transition = 'all 2s ease';
                             svg.style.opacity = '0';
+                            neighborNode.style.opacity = '0';
 
                             const content = neighborNode.parentNode.querySelector('.tuile__hexa');
                             content.style.transition = 'all 2s ease';
@@ -907,17 +911,7 @@ function RevealPower(tuileNode, cardRevealed) {
 
             const randomVoidNeighborIndex = randomBetween(0, voidNeighbors052.length - 1);
             if (voidNeighbors052.length > 0 && allPlanetsAndMoonsExept052.length > 0) {
-                const parent = voidNeighbors052[randomVoidNeighborIndex].parentNode;
-                parent.innerHTML = allPlanetsAndMoonsExept052[randomCardIndex].parentNode.innerHTML;
-                parent.querySelector('.tuile__hexa pattern').id = `imagePattern${parent.dataset.id}`;
-                parent.querySelector('.tuile__hexa path').setAttribute('fill', `url(#imagePattern${parent.dataset.id})`);
-
-                allPlanetsAndMoonsExept052[randomCardIndex].parentNode.innerHTML = `
-                    <svg class="tuile__bg" viewBox="0 0 100 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M23.5571 3.19824C24.4503 1.65123 26.1009 0.698242 27.8872 0.698242L72.1137 0.698242C73.9001 0.698242 75.5507 1.65124 76.4439 3.19824L98.5571 41.4995C99.4503 43.0465 99.4503 44.9525 98.5571 46.4995L76.4439 84.8008C75.5507 86.3478 73.9001 87.3008 72.1137 87.3008L27.8872 87.3008C26.1009 87.3008 24.4503 86.3478 23.5571 84.8008L1.44386 46.4995C0.5507 44.9525 0.550701 43.0465 1.44386 41.4995L23.5571 3.19824Z" fill="rgba(255, 255, 255, .2)"/>
-                    </svg>
-                    <div class="tuile__content"></div>
-                `;
+                MovePlatet(allPlanetsAndMoonsExept052[randomCardIndex].parentNode.dataset.id, voidNeighbors052[randomVoidNeighborIndex].parentNode.dataset.id);
             }
             break;
 
@@ -1024,18 +1018,8 @@ function RevealPower(tuileNode, cardRevealed) {
             const randomVoidNeighborI = randomBetween(0, voidNeighbors074.length - 1);
             if (voidNeighbors074.length > 0 && allPlanetsOnBoard.length > 0) {
                 const parent = voidNeighbors074[randomVoidNeighborI].parentNode;
-                parent.innerHTML = allPlanetsOnBoard[randomCardI].parentNode.innerHTML;
-                parent.querySelector('.tuile__hexa pattern').id = `imagePattern${parent.dataset.id}`;
-                parent.querySelector('.tuile__hexa path').setAttribute('fill', `url(#imagePattern${parent.dataset.id})`);
-
-                allPlanetsOnBoard[randomCardI].parentNode.innerHTML = `
-                    <svg class="tuile__bg" viewBox="0 0 100 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M23.5571 3.19824C24.4503 1.65123 26.1009 0.698242 27.8872 0.698242L72.1137 0.698242C73.9001 0.698242 75.5507 1.65124 76.4439 3.19824L98.5571 41.4995C99.4503 43.0465 99.4503 44.9525 98.5571 46.4995L76.4439 84.8008C75.5507 86.3478 73.9001 87.3008 72.1137 87.3008L27.8872 87.3008C26.1009 87.3008 24.4503 86.3478 23.5571 84.8008L1.44386 46.4995C0.5507 44.9525 0.550701 43.0465 1.44386 41.4995L23.5571 3.19824Z" fill="rgba(255, 255, 255, .2)"/>
-                    </svg>
-                    <div class="tuile__content"></div>
-                `;
-
-                AddToTuile(parent.querySelector('.tuile__content'), 4);
+                AddToTuile(allPlanetsOnBoard[randomCardI], 4);
+                MovePlatet(allPlanetsOnBoard[randomCardI].parentNode.dataset.id, parent.dataset.id);
             }
             break;
 
@@ -1359,21 +1343,21 @@ function RevealPower(tuileNode, cardRevealed) {
             case '045':
                 const allHecateNeighbors = GetAllNeighbors(hecate.parentNode);
                 allHecateNeighbors.forEach(neighbor => {
-                    if (neighbor.dataset.pwr && neighbor.type === TYPES[0]) AddToTuile(neighbor, 4);
+                    if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) AddToTuile(neighbor, 4);
                 });
                 break;
 
             case '046':
                 const allCancriDNeighbors = GetAllNeighbors(cancriD.parentNode);
                 allCancriDNeighbors.forEach(neighbor => {
-                    if (neighbor.dataset.pwr && neighbor.type === TYPES[0]) AddToTuile(neighbor, 1);
+                    if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) AddToTuile(neighbor, 1);
                 });
                 break;
 
             case '048':
                 const allTitanNeighbors = GetAllNeighbors(titan.parentNode);
                 allTitanNeighbors.forEach(neighbor => {
-                    if (neighbor.dataset.pwr && neighbor.type === TYPES[0]) AddToTuile(neighbor, -2);
+                    if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) AddToTuile(neighbor, -2);
                 });
                 break;
 
@@ -1392,14 +1376,14 @@ function RevealPower(tuileNode, cardRevealed) {
             case '057':
                 const allCallistoNeighbors = GetAllNeighbors(callisto.parentNode);
                 allCallistoNeighbors.forEach(neighbor => {
-                    if (neighbor.dataset.pwr && neighbor.type === TYPES[0]) AddToTuile(neighbor, -1);
+                    if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) AddToTuile(neighbor, -1);
                 });
                 break;
 
             case '081':
                 const allPurpleQuantumNeighbors = GetAllNeighbors(purpleQuantum.parentNode);
                 allPurpleQuantumNeighbors.forEach(neighbor => {
-                    if (neighbor.dataset.pwr && neighbor.type === TYPES[0]) AddToTuile(neighbor, -1);
+                    if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) AddToTuile(neighbor, -1);
                 });
 
                 if (purpleQuantum.dataset.boost === 'true') {
@@ -1420,7 +1404,7 @@ function RevealPower(tuileNode, cardRevealed) {
             case '082':
                 const allQuanticaLaranjaNeighbors = GetAllNeighbors(quanticaLaranja.parentNode);
                 allQuanticaLaranjaNeighbors.forEach(neighbor => {
-                    if (neighbor.dataset.pwr && neighbor.type === TYPES[0]) AddToTuile(neighbor, 1);
+                    if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) AddToTuile(neighbor, 1);
                 });
                 break;
 
@@ -1787,6 +1771,7 @@ function InitializationGame() {
     manaMaxBonus = 0;
     cardsDestroyToReset = [];
     btnCd = 0;
+    maxCardsInHand = 6;
     popupOffrande.querySelector('.offrande__moins').innerHTML = '';
     popupOffrande.querySelector('.offrande__moins').classList.add('hide');
     popupOffrande.querySelector('.offrande__plus').innerHTML = '';
@@ -2493,6 +2478,18 @@ function MovePlatet(idStart, idFinish) {
 
     PowerRecalculation(parentStart, parentFinish);
 
+    if (parentStart.querySelector('.tuile__content').dataset.card === '049') {
+        document.querySelectorAll('.obstructed').forEach(t => t.classList.remove('obstructed'));
+        GetAllNeighbors(parentFinish).forEach(n => {
+            if (
+                !n.dataset.card &&
+                !n.parentNode.classList.contains('tuile--sun')
+            ) {
+                n.classList.add('obstructed');
+            }
+        })
+    }
+
     parentFinish.innerHTML = parentStart.innerHTML;
     parentFinish.querySelector('.tuile__hexa pattern').id = `imagePattern${parentFinish.dataset.id}`;
     parentFinish.querySelector('.tuile__hexa path').setAttribute('fill', `url(#imagePattern${parentFinish.dataset.id})`);
@@ -2507,47 +2504,45 @@ function MovePlatet(idStart, idFinish) {
 
 
 function PowerRecalculation(parentStart, parentFinish) {
-    const cardIdMoved = parentStart.querySelector('.tuile__content').dataset.card;
-
+    const cardMoved = parentStart.querySelector('.tuile__content');
+    const cardMovedId = cardMoved.dataset.card;
     const parentStartNeighbors = GetAllNeighbors(parentStart);
     const parentFinishNeighbors = GetAllNeighbors(parentFinish);
-    let orbitRegulation = 0;
-
-    switch (cardIdMoved) {
-        case '045':
-            orbitRegulation = -4;
-            break;
-
-        case '046':
-            orbitRegulation = -1;
-            break;
-
-        case '048':
-            orbitRegulation = 2;
-            break;
-
-        case '057':
-            orbitRegulation = 1;
-            break;
-
-        case '081':
-            orbitRegulation = 1;
-            break;
-
-        case '082':
-            orbitRegulation = -1;
-            break;
-
-        default:
-            break;
-    }
+    const orbitRegulation = GetRegulation(cardMovedId);
 
     parentStartNeighbors.forEach(neighbor => {
-        if (neighbor.dataset.pwr && neighbor.type === TYPES[0]) AddToTuile(neighbor, (orbitRegulation * (-1)));
+        if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) {
+            AddToTuile(neighbor, (orbitRegulation * (-1)));
+        }
+        if (neighbor.dataset.card !== cardMovedId) {
+            AddToTuile(cardMoved, (GetRegulation(neighbor.dataset.card) * (-1)));
+        }
     });
     parentFinishNeighbors.forEach(neighbor => {
-        if (neighbor.dataset.pwr && neighbor.type === TYPES[0]) AddToTuile(neighbor, orbitRegulation);
+        if (
+            neighbor.dataset.pwr &&
+            neighbor.dataset.type === TYPES[0] &&
+            neighbor.dataset.card !== cardMovedId
+        ) {
+            AddToTuile(neighbor, orbitRegulation);
+        }
+        if (neighbor.dataset.card !== cardMovedId) {
+            AddToTuile(cardMoved, GetRegulation(neighbor.dataset.card));
+        }
     });
+}
+
+
+function GetRegulation(cardId) {
+    const regulations = {
+        '045': -4,
+        '046': -1,
+        '048': 2,
+        '057': 1,
+        '081': 1,
+        '082': -1
+    };
+    return regulations[cardId] || 0;
 }
 
 
@@ -2639,7 +2634,6 @@ function FilterAction() {
         }
 
         if (filterData === 'nature') {
-            console.log(filterValue);
             switch (filterValue) {
                 case 'tellurique':
                     allCollectionCards.forEach(card => {
