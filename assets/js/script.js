@@ -1003,7 +1003,7 @@ function RevealPower(tuileNode, cardRevealed) {
             const randomVoidNeighborI = randomBetween(0, voidNeighbors074.length - 1);
             if (voidNeighbors074.length > 0 && allPlanetsOnBoard.length > 0) {
                 const parent = voidNeighbors074[randomVoidNeighborI].parentNode;
-                AddToTuile(parent.querySelector('.tuile__content'), 4);
+                AddToTuile(allPlanetsOnBoard[randomCardI], 4);
                 MovePlatet(allPlanetsOnBoard[randomCardI].parentNode.dataset.id, parent.dataset.id);
             }
             break;
