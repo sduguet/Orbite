@@ -62,17 +62,17 @@ function Init() {
 
 
 function ClearTuiles() {
-    tuiles.forEach(tuile => {
-        // <svg class="tuile__hexa" viewBox="0 0 100 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-        //     <path d="M23.5571 3.19824C24.4503 1.65123 26.1009 0.698242 27.8872 0.698242L72.1137 0.698242C73.9001 0.698242 75.5507 1.65124 76.4439 3.19824L98.5571 41.4995C99.4503 43.0465 99.4503 44.9525 98.5571 46.4995L76.4439 84.8008C75.5507 86.3478 73.9001 87.3008 72.1137 87.3008L27.8872 87.3008C26.1009 87.3008 24.4503 86.3478 23.5571 84.8008L1.44386 46.4995C0.5507 44.9525 0.550701 43.0465 1.44386 41.4995L23.5571 3.19824Z" fill="white" fill-opacity="0.2"/>
-        // </svg>
-        tuile.innerHTML = `
-            <svg class="tuile__bg" viewBox="0 0 100 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M23.5571 3.19824C24.4503 1.65123 26.1009 0.698242 27.8872 0.698242L72.1137 0.698242C73.9001 0.698242 75.5507 1.65124 76.4439 3.19824L98.5571 41.4995C99.4503 43.0465 99.4503 44.9525 98.5571 46.4995L76.4439 84.8008C75.5507 86.3478 73.9001 87.3008 72.1137 87.3008L27.8872 87.3008C26.1009 87.3008 24.4503 86.3478 23.5571 84.8008L1.44386 46.4995C0.5507 44.9525 0.550701 43.0465 1.44386 41.4995L23.5571 3.19824Z" fill="rgba(255, 255, 255, .2)"/>
-            </svg>
-            <div class="tuile__content"></div>
-        `;
-    })
+    tuiles.forEach(tuile => ClearOneTuile(tuile));
+}
+
+
+function ClearOneTuile(tuileNode) {
+    tuileNode.innerHTML = `
+        <svg class="tuile__bg" viewBox="0 0 100 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M23.5571 3.19824C24.4503 1.65123 26.1009 0.698242 27.8872 0.698242L72.1137 0.698242C73.9001 0.698242 75.5507 1.65124 76.4439 3.19824L98.5571 41.4995C99.4503 43.0465 99.4503 44.9525 98.5571 46.4995L76.4439 84.8008C75.5507 86.3478 73.9001 87.3008 72.1137 87.3008L27.8872 87.3008C26.1009 87.3008 24.4503 86.3478 23.5571 84.8008L1.44386 46.4995C0.5507 44.9525 0.550701 43.0465 1.44386 41.4995L23.5571 3.19824Z" fill="rgba(255, 255, 255, .2)"/>
+        </svg>
+        <div class="tuile__content"></div>
+    `;
 }
 
 
@@ -723,13 +723,7 @@ function RevealPower(tuileNode, cardRevealed) {
                     content.style.opacity = '0';
 
                     setTimeout(() => {
-                        allPlanetsOnBoardExecptEris[randomIndex].parentNode.innerHTML = `
-                            <svg class="tuile__bg" viewBox="0 0 100 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M23.5571 3.19824C24.4503 1.65123 26.1009 0.698242 27.8872 0.698242L72.1137 0.698242C73.9001 0.698242 75.5507 1.65124 76.4439 3.19824L98.5571 41.4995C99.4503 43.0465 99.4503 44.9525 98.5571 46.4995L76.4439 84.8008C75.5507 86.3478 73.9001 87.3008 72.1137 87.3008L27.8872 87.3008C26.1009 87.3008 24.4503 86.3478 23.5571 84.8008L1.44386 46.4995C0.5507 44.9525 0.550701 43.0465 1.44386 41.4995L23.5571 3.19824Z" fill="rgba(255, 255, 255, .2)"/>
-                            </svg>
-                            <div class="tuile__content"></div>
-                        `;
-
+                        ClearOneTuile(allPlanetsOnBoardExecptEris[randomIndex].parentNode);
                         UpdateCurrentAllPointsScored();
                     }, 2000);
                 }, 500);
@@ -813,13 +807,7 @@ function RevealPower(tuileNode, cardRevealed) {
                             content.style.opacity = '0';
 
                             setTimeout(() => {
-                                neighborNode.parentNode.innerHTML = `
-                                    <svg class="tuile__bg" viewBox="0 0 100 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M23.5571 3.19824C24.4503 1.65123 26.1009 0.698242 27.8872 0.698242L72.1137 0.698242C73.9001 0.698242 75.5507 1.65124 76.4439 3.19824L98.5571 41.4995C99.4503 43.0465 99.4503 44.9525 98.5571 46.4995L76.4439 84.8008C75.5507 86.3478 73.9001 87.3008 72.1137 87.3008L27.8872 87.3008C26.1009 87.3008 24.4503 86.3478 23.5571 84.8008L1.44386 46.4995C0.5507 44.9525 0.550701 43.0465 1.44386 41.4995L23.5571 3.19824Z" fill="rgba(255, 255, 255, .2)"/>
-                                    </svg>
-                                    <div class="tuile__content"></div>
-                                `;
-
+                                ClearOneTuile(neighborNode.parentNode);
                                 UpdateCurrentAllPointsScored();
                             }, 2000);
                         }, 500);
@@ -1503,6 +1491,58 @@ function PowerEndOfTurn() {
             }
         }
     }
+    // --- 086
+    const theEggBell = document.querySelector('.tuile__content[data-card="086"]');
+    if (theEggBell && history[currentTurn].length === 2) {
+        AddToTuile(theEggBell, 3);
+    }
+    // --- 087
+    const theEggBunny = document.querySelector('.tuile__content[data-card="087"]');
+    if (theEggBunny) {
+        const allNeighbors = GetAllNeighbors(theEggBunny.parentNode);
+        const cardNeighbors = allNeighbors.filter(neighbor => neighbor.dataset.card && neighbor.dataset.type === TYPES[0]);
+        const shuffled = cardNeighbors.sort(() => Math.random() - 0.5);
+        const selectedNeighbors = shuffled.slice(0, 3);
+        selectedNeighbors.forEach(neighbor => AddToTuile(neighbor, 1));
+    }
+    // --- 084
+    const theEgg = document.querySelector('.tuile__content[data-card="084"]');
+    if (theEgg) {
+        const turnTheEggPlayed = Object.keys(history).find(key => history[key].includes('084'));
+
+        if (parseInt(turnTheEggPlayed) === currentTurn - 2) {
+            const rand = randomBetween(1, 3);
+            const eggTuile = theEgg.parentNode;
+
+            ClearOneTuile(eggTuile);
+            SetHtmlInHexagon(eggTuile.querySelector('.tuile__content'), deepClone(ALL_CARDS.find(c => c.id === `0${84 + rand}`)));
+        }
+    }
+    // --- 085
+    const theEggChicken = document.querySelector('.tuile__content[data-card="085"]');
+    if (theEggChicken && currentTurn !== nbTurnMax) {
+        manaBonus += 1;
+        const rand = randomBetween(0, playerHand.length - 1);
+        const cardNode = document.querySelector(`.hand .card[data-id="${playerHand[rand].id}"]`);
+        const cardPwr = playerHand[rand].pwr;
+        
+        if (cardPwr) {
+            const allPlanets = document.querySelectorAll(`.tuile__content[data-type=${TYPES[0]}]`);
+            const randomIndex = Math.floor(Math.random() * allPlanets.length);
+            AddToTuile(allPlanets[randomIndex], cardPwr);
+        }
+
+        cardNode.style.transition = 'all 2s ease-in-out';
+        setTimeout(() => {
+            cardNode.style.transform = 'translate(-200px, -800px)';
+            cardNode.style.opacity = '0';
+            
+            setTimeout(() => {
+                playerHand.splice(rand, 1);
+                HtmlCards();
+            }, 2500);
+        }, 10);
+    }
 
     UpdateCurrentAllPointsScored();
 }
@@ -1563,6 +1603,21 @@ function End() {
         UpdateCollection();
         InitChangeDeck();
     }
+    if (nbManche >= 20 && !localDex.allCards.find(c => c.id === '077').found) {
+        localDex.allCards.find(c => c.id === '077').found = Date.now();
+        localStorage.setItem('dex', JSON.stringify(localDex));
+        UpdateCollection();
+        InitChangeDeck();
+    }
+    if (nbManche >= 6 && !localDex.allCards.find(c => c.id === '084').found && !startingCardsChosen.some(cardId => ALL_CARDS.find(c => c.id === cardId).mana > 3)) {
+        localDex.allCards.find(c => c.id === '084').found = Date.now();
+        localDex.allCards.find(c => c.id === '085').found = Date.now();
+        localDex.allCards.find(c => c.id === '086').found = Date.now();
+        localDex.allCards.find(c => c.id === '087').found = Date.now();
+        localStorage.setItem('dex', JSON.stringify(localDex));
+        UpdateCollection();
+        InitChangeDeck();
+    }
 
     if (allPoints >= pointsToScore) {
         popupEndResult.innerHTML = `Manche réussie`;
@@ -1574,15 +1629,6 @@ function End() {
             localDex.maxManches = nbManche;
             localStorage.setItem('dex', JSON.stringify(localDex));
             UpdateHomeStats();
-        }
-        if (
-            localDex.maxManches >= 20 &&
-            !localDex.allCards.find(c => c.id === '077').found
-        ) {
-            localDex.allCards.find(c => c.id === '077').found = Date.now();
-            localStorage.setItem('dex', JSON.stringify(localDex));
-            UpdateCollection();
-            InitChangeDeck();
         }
     } else {
         popupEndResult.innerHTML = `Vous avez échoué`;
@@ -2316,9 +2362,12 @@ function UpdateCurrentAllPointsScored() {
 function InitChangeDeck() {
     const localDex = JSON.parse(localStorage.getItem('dex'));
     const deckList = document.querySelector('.deck-deckList');
-
+    let allManaCost = 0;
+    
     deckList.innerHTML = '';
     localDex.defaultDeck.forEach(cardId => {
+        allManaCost += ALL_CARDS.find(c => c.id === cardId).mana;
+
         const cardNode = document.createElement('li');
         cardNode.classList.add('deck-deckList__ele');
         cardNode.dataset.id = cardId;
@@ -2352,6 +2401,8 @@ function InitChangeDeck() {
             } else deckRemove = '';
         })
     });
+
+    document.querySelector('.deck .cost__mana').innerHTML = Math.ceil(allManaCost / 12 * 10) / 10; 
 
     const collectionList = document.querySelector('.deck-collectionList');
     collectionList.innerHTML = '';
@@ -2494,12 +2545,7 @@ function MovePlatet(idStart, idFinish) {
     parentFinish.querySelector('.tuile__hexa pattern').id = `imagePattern${parentFinish.dataset.id}`;
     parentFinish.querySelector('.tuile__hexa path').setAttribute('fill', `url(#imagePattern${parentFinish.dataset.id})`);
 
-    parentStart.innerHTML = `
-        <svg class="tuile__bg" viewBox="0 0 100 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M23.5571 3.19824C24.4503 1.65123 26.1009 0.698242 27.8872 0.698242L72.1137 0.698242C73.9001 0.698242 75.5507 1.65124 76.4439 3.19824L98.5571 41.4995C99.4503 43.0465 99.4503 44.9525 98.5571 46.4995L76.4439 84.8008C75.5507 86.3478 73.9001 87.3008 72.1137 87.3008L27.8872 87.3008C26.1009 87.3008 24.4503 86.3478 23.5571 84.8008L1.44386 46.4995C0.5507 44.9525 0.550701 43.0465 1.44386 41.4995L23.5571 3.19824Z" fill="rgba(255, 255, 255, .2)"/>
-        </svg>
-        <div class="tuile__content"></div>
-    `;
+    ClearOneTuile(parentStart);
 }
 
 
