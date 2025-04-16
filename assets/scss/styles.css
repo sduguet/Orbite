@@ -1140,6 +1140,29 @@ body {
   align-items: center;
   gap: 16px;
 }
+.deck__head {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.deck .cost {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: absolute;
+  left: 30px;
+}
+.deck .cost__img {
+  width: 40px;
+}
+.deck .cost__mana {
+  padding-top: 10px;
+  color: white;
+  font-family: "Yatra One";
+  font-size: 40px;
+  text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+}
 .deck__title {
   color: white;
   font-family: "Yatra One";
