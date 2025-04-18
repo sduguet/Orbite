@@ -351,6 +351,10 @@ body {
 }
 
 .hand {
+	width: calc(200px * 6 + 4px * 5 + 8px * 2);
+	min-height: 287px;
+	padding: 8px 8px 0;
+	background-image: url('../img/hudHand.png');
 	display: flex;
 	gap: 4px;
 	position: absolute;
