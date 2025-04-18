@@ -308,7 +308,7 @@ function SelectCard() {
 
 
 function NextTurn() {
-    if ((Date.now() - btnCd) < 1200) return;
+    if ((Date.now() - btnCd) < 1000) return;
 
     if (currentTurn !== 0) PowerEndOfTurn();
 
@@ -334,6 +334,8 @@ function NextTurn() {
                 DrawCard();
             }
         }
+        
+        PowerBeginningTurn();
 
         btnNextTurn.dataset.front = `${currentTurn}/${nbTurnMax}`
         manaNode.innerHTML = playerMana;
@@ -1139,6 +1141,60 @@ function RevealPower(tuileNode, cardRevealed) {
             }
             break;
 
+        case '088':
+            const boost = parseInt(playerHand.length) * 2;
+            tuileContent.dataset.boost = boost;
+            AddToTuile(tuileContent, boost);
+            break;
+
+        case '089':
+            playerDeck.push(deepClone(ALL_CARDS.find(card => card.id === '022')));
+            playerDeck.push(deepClone(ALL_CARDS.find(card => card.id === '022')));
+            break;
+
+        case '090':
+            if (playerHand.length > 0) {
+                const rand = randomBetween(0, playerHand.length - 1);
+                playerHand[rand].mana += 1;
+                HtmlCards();
+            }
+            break;
+
+        case '091':
+            if (playerHand.length > 0) {
+                const cumulativePwr = playerHand.reduce(
+                    (total, card) => total + (typeof card.pwr === 'number' ? card.pwr : 0), 0
+                );
+
+                if (cumulativePwr >= 15) AddToTuile(tuileContent, cumulativePwr);
+            }
+            break;
+
+        case '092':
+            setTimeout(() => {
+                if (playerHand.length < 6) {
+                    const availableCards = ALL_CARDS.filter(card => !startingCardsChosen.some(handCard => handCard === card.id));
+                    const randAvailableCards = deepClone(availableCards[randomBetween(0, availableCards.length - 1)]);
+                    randAvailableCards.mana -= 1;
+                    playerHand.push(randAvailableCards);
+                    HtmlCards();
+                }
+            }, 50);
+            break;
+
+        case '093':
+            setTimeout(() => {
+                if (playerHand.length < 6) {
+                    const availableCards = ALL_CARDS.filter(card => !startingCardsChosen.some(handCard => handCard === card.id) && card.mana === 6);
+                    const randAvailableCards = deepClone(availableCards[randomBetween(0, availableCards.length - 1)]);
+                    randAvailableCards.mana -= 2;
+                    randAvailableCards.pwr -= 2;
+                    playerHand.push(randAvailableCards);
+                    HtmlCards();
+                }
+            }, 50);
+            break;
+
         default:
             break;
     }
@@ -1315,6 +1371,15 @@ function RevealPower(tuileNode, cardRevealed) {
         }
     }
 
+    const gliese581B = document.querySelector('.tuile__content[data-card="088"]');
+    if (gliese581B) {
+        const oldBoost = parseInt(gliese581B.dataset.boost);
+        const newBoost = parseInt(playerHand.length) * 2;
+        AddToTuile(gliese581B, oldBoost * (-1));
+        AddToTuile(gliese581B, newBoost);
+        gliese581B.dataset.boost = newBoost;
+    }
+
     // Destroy treatment
     cardsDestroyToReset.forEach(cardIdDestroyed => {
         switch (cardIdDestroyed) {
@@ -1420,6 +1485,19 @@ function AddToTuile(tuileContent, value) {
         tuilePwrNode.innerHTML = tuileContent.dataset.pwr;
         tuilePwrNode.classList.toggle('tuile__pwr--up', parseInt(tuileContent.dataset.pwr) > originalPwr);
         tuilePwrNode.classList.toggle('tuile__pwr--down', parseInt(tuileContent.dataset.pwr) < originalPwr);
+    }
+}
+
+
+function PowerBeginningTurn() {
+    // --- 088
+    const gliese581B = document.querySelector('.tuile__content[data-card="088"]');
+    if (gliese581B) {
+        const oldBoost = parseInt(gliese581B.dataset.boost);
+        const newBoost = parseInt(playerHand.length) * 2;
+        AddToTuile(gliese581B, oldBoost * (-1));
+        AddToTuile(gliese581B, newBoost);
+        gliese581B.dataset.boost = newBoost;
     }
 }
 
@@ -1545,6 +1623,15 @@ function PowerEndOfTurn() {
                 }, 2500);
             }, 10);
         }
+    }
+    // --- 088
+    const gliese581B = document.querySelector('.tuile__content[data-card="088"]');
+    if (gliese581B) {
+        const oldBoost = parseInt(gliese581B.dataset.boost);
+        const newBoost = parseInt(playerHand.length) * 2;
+        AddToTuile(gliese581B, oldBoost * (-1));
+        AddToTuile(gliese581B, newBoost);
+        gliese581B.dataset.boost = newBoost;
     }
 
     UpdateCurrentAllPointsScored();
