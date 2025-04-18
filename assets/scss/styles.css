@@ -186,9 +186,10 @@ body {
 }
 .dex .back {
   width: 64px;
-  position: absolute;
+  position: fixed;
   top: 32px;
   left: 32px;
+  z-index: 10;
   cursor: pointer;
 }
 .dex__logo {
@@ -1011,9 +1012,10 @@ body {
 }
 .deck .back {
   width: 64px;
-  position: absolute;
+  position: fixed;
   top: 32px;
   left: 32px;
+  z-index: 10;
   cursor: pointer;
 }
 .deck__logo {
