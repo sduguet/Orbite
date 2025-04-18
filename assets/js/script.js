@@ -1767,7 +1767,12 @@ function UpdateCollection() {
         }
 
         dexList.appendChild(cardNode);
-    })
+    });
+
+    const percentageNode = document.querySelector('.dex__percentage');
+    const totalFoundCards = localDex.allCards.filter(card => card.found).length;
+    const percentage = Math.floor((totalFoundCards / ALL_CARDS.length) * 1000) / 10;
+    percentageNode.innerHTML = `${percentage}%`;
 }
 
 
