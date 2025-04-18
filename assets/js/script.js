@@ -1522,26 +1522,29 @@ function PowerEndOfTurn() {
     const theEggChicken = document.querySelector('.tuile__content[data-card="085"]');
     if (theEggChicken && currentTurn !== nbTurnMax) {
         manaBonus += 1;
-        const rand = randomBetween(0, playerHand.length - 1);
-        const cardNode = document.querySelector(`.hand .card[data-id="${playerHand[rand].id}"]`);
-        const cardPwr = playerHand[rand].pwr;
-        
-        if (cardPwr) {
-            const allPlanets = document.querySelectorAll(`.tuile__content[data-type=${TYPES[0]}]`);
-            const randomIndex = Math.floor(Math.random() * allPlanets.length);
-            AddToTuile(allPlanets[randomIndex], cardPwr);
-        }
 
-        cardNode.style.transition = 'all 2s ease-in-out';
-        setTimeout(() => {
-            cardNode.style.transform = 'translate(-200px, -800px)';
-            cardNode.style.opacity = '0';
+        if (playerHand.length > 0) {
+            const rand = randomBetween(0, playerHand.length - 1);
+            const cardNode = document.querySelector(`.hand .card[data-id="${playerHand[rand].id}"]`);
+            const cardPwr = playerHand[rand].pwr;
             
+            if (cardPwr) {
+                const allPlanets = document.querySelectorAll(`.tuile__content[data-type=${TYPES[0]}]`);
+                const randomIndex = Math.floor(Math.random() * allPlanets.length);
+                AddToTuile(allPlanets[randomIndex], cardPwr);
+            }
+    
+            cardNode.style.transition = 'all 2s ease-in-out';
             setTimeout(() => {
-                playerHand.splice(rand, 1);
-                HtmlCards();
-            }, 2500);
-        }, 10);
+                cardNode.style.transform = 'translate(-200px, -800px)';
+                cardNode.style.opacity = '0';
+                
+                setTimeout(() => {
+                    playerHand.splice(rand, 1);
+                    HtmlCards();
+                }, 2500);
+            }, 10);
+        }
     }
 
     UpdateCurrentAllPointsScored();
