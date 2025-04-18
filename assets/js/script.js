@@ -56,6 +56,7 @@ function Init() {
     InitLocalStorage();
     UpdateCollection();
     InitChangeDeck();
+    InitFilters();
     InitNavigation();
     UpdateHomeStats();
 }
@@ -241,10 +242,10 @@ function Drag(e) {
     const cardDragged = document.querySelector('.dragged');
     const currentScale = parseFloat(cardDragged.dataset.scale);
     const currentRotate = parseFloat(cardDragged.dataset.rotate);
-    const scale = Math.max(currentScale - 0.01, .5);
+    const scale = Math.max(currentScale - 0.02, .5);
     const rotate = e.clientX > parseInt(cardDragged.dataset.oldX) 
-        ? Math.min(currentRotate + 0.05, 5)
-        : Math.max(currentRotate - 0.05, -5);
+        ? Math.min(currentRotate + 0.08, 6)
+        : Math.max(currentRotate - 0.08, -6);
 
     cardDragged.dataset.oldX = e.clientX;
     cardDragged.dataset.scale = scale;
@@ -1680,30 +1681,40 @@ function End() {
         localStorage.setItem('dex', JSON.stringify(localDex));
         UpdateHomeStats();
     }
-
+    
+    let foundSomeCards = false;
     if (allPoints >= 100 && !localDex.allCards.find(c => c.id === '072').found) {
         localDex.allCards.find(c => c.id === '072').found = Date.now();
-        localStorage.setItem('dex', JSON.stringify(localDex));
-        UpdateCollection();
-        InitChangeDeck();
+        foundSomeCards = true;
     }
     if (maxPointOnSinglePlent >= 49 && !localDex.allCards.find(c => c.id === '071').found) {
         localDex.allCards.find(c => c.id === '071').found = Date.now();
-        localStorage.setItem('dex', JSON.stringify(localDex));
-        UpdateCollection();
-        InitChangeDeck();
+        foundSomeCards = true;
     }
     if (nbManche >= 20 && !localDex.allCards.find(c => c.id === '077').found) {
         localDex.allCards.find(c => c.id === '077').found = Date.now();
-        localStorage.setItem('dex', JSON.stringify(localDex));
-        UpdateCollection();
-        InitChangeDeck();
     }
-    if (nbManche >= 6 && !localDex.allCards.find(c => c.id === '084').found && !startingCardsChosen.some(cardId => ALL_CARDS.find(c => c.id === cardId).mana > 3)) {
+    if (
+        nbManche >= 6 &&
+        !localDex.allCards.find(c => c.id === '084').found &&
+        !startingCardsChosen.some(cardId => ALL_CARDS.find(c => c.id === cardId).mana > 3)
+    ){
         localDex.allCards.find(c => c.id === '084').found = Date.now();
         localDex.allCards.find(c => c.id === '085').found = Date.now();
         localDex.allCards.find(c => c.id === '086').found = Date.now();
         localDex.allCards.find(c => c.id === '087').found = Date.now();
+        foundSomeCards = true;
+    }
+    if (
+        nbManche >= 10 &&
+        !localDex.allCards.find(c => c.id === '094').found &&
+        Array.from({length: 12}, (_, i) => `00${i+1}`.slice(-3)).every(cardId => startingCardsChosen.includes(cardId))
+    ){
+        localDex.allCards.find(c => c.id === '094').found = Date.now();
+        foundSomeCards = true;
+    }
+
+    if (foundSomeCards) {
         localStorage.setItem('dex', JSON.stringify(localDex));
         UpdateCollection();
         InitChangeDeck();
@@ -2524,8 +2535,8 @@ function InitChangeDeck() {
             }
         })
     });
-
-    InitFilters();
+    
+    FilterAction();
 }
 
 

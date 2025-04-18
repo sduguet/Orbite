@@ -1,4 +1,4 @@
-const VERSION = '1.2.0';
+const VERSION = '1.3.0';
 const TYPES = ['planet', 'lune', 'asteroid', 'star', 'ship'];
 const ELEMENTS = ['feu', 'eau', 'air', 'terre'];
 const NATURES = ['Tellurique', 'Gazeuse', 'Naine'];
@@ -1044,6 +1044,7 @@ const ALL_CARDS = [
         'offrande': true,
         'playable': true,
     },
+    // ε Eridani
     {
         'id': '092',
         'name': 'ε Eridani B',
@@ -1068,17 +1069,19 @@ const ALL_CARDS = [
         'offrande': true,
         'playable': true,
     },
+    // Bob
     {
         'id': '094',
         'name': 'Bob',
         'type': TYPES[0],
-        'element': [ELEMENTS[0], ELEMENTS[1], ELEMENTS[2], ELEMENTS[0]],
+        'element': [ELEMENTS[0], ELEMENTS[1], ELEMENTS[2], ELEMENTS[3]],
         'nature': NATURES[0],
         'mana': 3,
         'pwr': 2,
         'desc': `[Révélé] Ajoute une carte aléatoire de coût initial 6 à votre main et lui réduit son coût et sa puissance de 2`,
         'offrande': false,
         'playable': true,
+        'challenge': `Dépasser la manche 10 avec le deck par défaut.`,
     },
 ];
 

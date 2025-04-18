@@ -1094,9 +1094,14 @@ body {
 	&__head {
 		width: 100%;
 		display: flex;
-		justify-content: space-between;
+		justify-content: center;
 		align-items: center;
-		gap: 64px;
+		position: relative;
+
+		&--filters {
+			justify-content: space-between;
+			gap: 64px;
+		}
 	}
 
 	&-deckList,
@@ -1218,13 +1223,6 @@ body {
 		flex-direction: column;
 		align-items: center;
 		gap: 16px;
-	}
-
-	&__head {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		position: relative;
 	}
 
 	.cost {
