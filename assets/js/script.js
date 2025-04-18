@@ -1,7 +1,7 @@
 const body = document.querySelector('body');
 const tuiles = document.querySelectorAll('.tuile');
 const btnNextTurn = document.querySelector('.nextTurn');
-const manaNode = document.querySelector('.mana');
+const manaNode = document.querySelector('.br .mana');
 const infoOvered = document.querySelector('.infoOvered');
 const popupStart = document.querySelector('.start');
 const bntStart = popupStart.querySelector('.start__btn');
@@ -27,6 +27,7 @@ let manaBonus;
 let manaMaxBonus;
 let cardsDestroyToReset;
 let btnCd;
+let spaceCd;
 let offrandeChoiceAdd;
 let offrandeChoiceDelete;
 let nbManche;
@@ -46,6 +47,7 @@ function Init() {
         tuile.addEventListener('mouseleave', LeaveTuile);
     });
 
+    window.addEventListener('keypress', Keypress);
     btnNextTurn.addEventListener('click', NextTurn);
     bntStart.addEventListener('click', InitializationGame);
     popupOffrandeBtn.addEventListener('click', OffrandeAction);
@@ -229,12 +231,12 @@ function DragAnimation(e) {
     cardDragged.classList.add('dragged');
     cardDragged.dataset.oldX = e.clientX;
     cardDragged.dataset.originX = e.clientX;
-    cardDragged.dataset.originY= e.clientY;
+    cardDragged.dataset.originY = e.clientY;
     cardDragged.dataset.scale = 1;
     cardDragged.dataset.rotate = 0;
 
     document.onmousemove = Drag;
-	document.onmouseup = Drop;
+    document.onmouseup = Drop;
 }
 
 
@@ -243,7 +245,7 @@ function Drag(e) {
     const currentScale = parseFloat(cardDragged.dataset.scale);
     const currentRotate = parseFloat(cardDragged.dataset.rotate);
     const scale = Math.max(currentScale - 0.02, .5);
-    const rotate = e.clientX > parseInt(cardDragged.dataset.oldX) 
+    const rotate = e.clientX > parseInt(cardDragged.dataset.oldX)
         ? Math.min(currentRotate + 0.08, 6)
         : Math.max(currentRotate - 0.08, -6);
 
@@ -291,9 +293,9 @@ function Drop() {
     setTimeout(() => {
         cardDragged.style.transform = `translate(0px, 0px) rotate(0deg)`;
     }, 10);
-    
+
     document.onmousemove = null;
-	document.onmouseup = null;
+    document.onmouseup = null;
 }
 
 
@@ -335,7 +337,7 @@ function NextTurn() {
                 DrawCard();
             }
         }
-        
+
         PowerBeginningTurn();
 
         btnNextTurn.dataset.front = `${currentTurn}/${nbTurnMax}`
@@ -1606,18 +1608,18 @@ function PowerEndOfTurn() {
             const rand = randomBetween(0, playerHand.length - 1);
             const cardNode = document.querySelector(`.hand .card[data-id="${playerHand[rand].id}"]`);
             const cardPwr = playerHand[rand].pwr;
-            
+
             if (cardPwr) {
                 const allPlanets = document.querySelectorAll(`.tuile__content[data-type=${TYPES[0]}]`);
                 const randomIndex = Math.floor(Math.random() * allPlanets.length);
                 AddToTuile(allPlanets[randomIndex], cardPwr);
             }
-    
+
             cardNode.style.transition = 'all 2s ease-in-out';
             setTimeout(() => {
                 cardNode.style.transform = 'translate(-200px, -800px)';
                 cardNode.style.opacity = '0';
-                
+
                 setTimeout(() => {
                     playerHand.splice(rand, 1);
                     HtmlCards();
@@ -1645,6 +1647,10 @@ function deepClone(obj) {
 
 
 function End() {
+    currentTurn = null;
+    btnNextTurn.dataset.front = 'waiting';
+    manaNode.innerHTML = '';
+
     popupEnd.classList.remove('hide');
     popupEnd.style.opacity = '0';
     popupEnd.querySelector('.end__popup').style.transform = 'translateX(1800px)';
@@ -1681,7 +1687,7 @@ function End() {
         localStorage.setItem('dex', JSON.stringify(localDex));
         UpdateHomeStats();
     }
-    
+
     let foundSomeCards = false;
     if (allPoints >= 100 && !localDex.allCards.find(c => c.id === '072').found) {
         localDex.allCards.find(c => c.id === '072').found = Date.now();
@@ -1698,7 +1704,7 @@ function End() {
         nbManche >= 6 &&
         !localDex.allCards.find(c => c.id === '084').found &&
         !startingCardsChosen.some(cardId => ALL_CARDS.find(c => c.id === cardId).mana > 3)
-    ){
+    ) {
         localDex.allCards.find(c => c.id === '084').found = Date.now();
         localDex.allCards.find(c => c.id === '085').found = Date.now();
         localDex.allCards.find(c => c.id === '086').found = Date.now();
@@ -1708,8 +1714,8 @@ function End() {
     if (
         nbManche >= 10 &&
         !localDex.allCards.find(c => c.id === '094').found &&
-        Array.from({length: 12}, (_, i) => `00${i+1}`.slice(-3)).every(cardId => startingCardsChosen.includes(cardId))
-    ){
+        Array.from({ length: 12 }, (_, i) => `00${i + 1}`.slice(-3)).every(cardId => startingCardsChosen.includes(cardId))
+    ) {
         localDex.allCards.find(c => c.id === '094').found = Date.now();
         foundSomeCards = true;
     }
@@ -1923,6 +1929,7 @@ function InitializationGame() {
     manaMaxBonus = 0;
     cardsDestroyToReset = [];
     btnCd = 0;
+    spaceCd = 0;
     maxCardsInHand = 6;
     popupOffrande.querySelector('.offrande__moins').innerHTML = '';
     popupOffrande.querySelector('.offrande__moins').classList.add('hide');
@@ -2144,7 +2151,7 @@ function SetOffrande() {
         `;
 
         offrandeNode.appendChild(li);
-        if(!localDex.allCards.find(c => c.id === cardId)?.found) new SparkleAnimation(li.querySelector('.sparkles-container'));
+        if (!localDex.allCards.find(c => c.id === cardId)?.found) new SparkleAnimation(li.querySelector('.sparkles-container'));
 
         li.addEventListener('click', () => {
             if (li.classList.contains('flipped')) {
@@ -2469,7 +2476,7 @@ function InitChangeDeck() {
     const localDex = JSON.parse(localStorage.getItem('dex'));
     const deckList = document.querySelector('.deck-deckList');
     let allManaCost = 0;
-    
+
     deckList.innerHTML = '';
     localDex.defaultDeck.forEach(cardId => {
         allManaCost += ALL_CARDS.find(c => c.id === cardId).mana;
@@ -2508,7 +2515,7 @@ function InitChangeDeck() {
         })
     });
 
-    document.querySelector('.deck .cost__mana').innerHTML = Math.ceil(allManaCost / 12 * 10) / 10; 
+    document.querySelector('.deck .cost__mana').innerHTML = Math.ceil(allManaCost / 12 * 10) / 10;
 
     const collectionList = document.querySelector('.deck-collectionList');
     collectionList.innerHTML = '';
@@ -2535,12 +2542,12 @@ function InitChangeDeck() {
             } else {
                 const oldSelected = collectionList.querySelector('.deck-collectionList__ele.selected');
                 oldSelected?.classList.remove('selected');
-    
+
                 if (oldSelected !== cardNode) cardNode.classList.add('selected');
             }
         })
     });
-    
+
     FilterAction();
 }
 
@@ -2618,7 +2625,7 @@ function RevertGaiamotto(localDex) {
                 .find(cardId => !localDex.defaultDeck.includes(cardId));
 
             if (replacementCard) {
-                localDex.defaultDeck = localDex.defaultDeck.map(cardId => 
+                localDex.defaultDeck = localDex.defaultDeck.map(cardId =>
                     cardId === '072' ? replacementCard : cardId
                 );
             }
@@ -2779,7 +2786,7 @@ function FilterAction() {
                         if (card.dataset.id === '012') card.classList.remove('hide');
                     });
                     break;
-            
+
                 default:
                     break;
             }
@@ -2804,10 +2811,65 @@ function FilterAction() {
                         if (ALL_CARDS.find(c => c.id === card.dataset.id)?.nature !== NATURES[2]) card.classList.add('hide');
                     });
                     break;
-            
+
                 default:
                     break;
             }
         }
     });
+}
+
+
+function Keypress(e) {
+    const gamePage = document.querySelector('.inGame.page');
+    if (gamePage.classList.contains('hide')) return;
+
+    let cardToSelect;
+    switch (true) {
+        case e.key === '&' || e.key === '1':
+            cardToSelect = document.querySelector('.hand .card:nth-child(1)');
+            break;
+
+        case e.key === 'é' || e.key === '2':
+            cardToSelect = document.querySelector('.hand .card:nth-child(2)');
+            break;
+
+        case e.key === '"' || e.key === '3':
+            cardToSelect = document.querySelector('.hand .card:nth-child(3)');
+            break;
+
+        case e.key === "'" || e.key === '4':
+            cardToSelect = document.querySelector('.hand .card:nth-child(4)');
+            break;
+
+        case e.key === '(' || e.key === '5':
+            cardToSelect = document.querySelector('.hand .card:nth-child(5)');
+            break;
+
+        case e.key === '-' || e.key === '6':
+            cardToSelect = document.querySelector('.hand .card:nth-child(6)');
+            break;
+
+        case e.key === ' ':
+            if ((Date.now() - spaceCd) < 1000) break;
+
+            if (currentTurn) btnNextTurn.click();
+            else if (!popupEnd.classList.contains('hide')) popupEnd.querySelector('.end__btn:not(.hide)').click();
+            else if (!popupStart.classList.contains('hide')) bntStart.click();
+            else if (!popupRecap.classList.contains('hide')) popupRecapBtn.click();
+
+            spaceCd = Date.now();
+            break;
+    }
+    
+    if (cardToSelect) {
+        const oldSelected = document.querySelector('.hand .card--selected');
+        oldSelected?.classList.remove('card--selected');
+        selectedCardNode = null
+
+        if (oldSelected !== cardToSelect) {
+            cardToSelect?.classList.add('card--selected');
+            selectedCardNode = cardToSelect;
+        }
+    }
 }

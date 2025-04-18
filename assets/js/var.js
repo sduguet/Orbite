@@ -1,4 +1,4 @@
-const VERSION = '1.3.0';
+const VERSION = '1.3.1';
 const TYPES = ['planet', 'lune', 'asteroid', 'star', 'ship'];
 const ELEMENTS = ['feu', 'eau', 'air', 'terre'];
 const NATURES = ['Tellurique', 'Gazeuse', 'Naine'];
