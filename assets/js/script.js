@@ -1574,7 +1574,7 @@ function PowerEndOfTurn() {
     }
     // --- 086
     const theEggBell = document.querySelector('.tuile__content[data-card="086"]');
-    if (theEggBell && history[currentTurn].length === 2) {
+    if (theEggBell && history[currentTurn]?.length === 2) {
         AddToTuile(theEggBell, 3);
     }
     // --- 087
