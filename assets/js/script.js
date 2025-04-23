@@ -1594,9 +1594,13 @@ function PowerEndOfTurn() {
         if (parseInt(turnTheEggPlayed) === currentTurn - 2) {
             const rand = randomBetween(1, 3);
             const eggTuile = theEgg.parentNode;
+            let eggTuileContent = eggTuile.querySelector('.tuile__content');
+            const oldPower = parseInt(eggTuileContent.dataset.pwr);
 
             ClearOneTuile(eggTuile);
-            SetHtmlInHexagon(eggTuile.querySelector('.tuile__content'), deepClone(ALL_CARDS.find(c => c.id === `0${84 + rand}`)));
+            eggTuileContent = eggTuile.querySelector('.tuile__content');
+            SetHtmlInHexagon(eggTuileContent, deepClone(ALL_CARDS.find(c => c.id === `0${84 + rand}`)));
+            AddToTuile(eggTuileContent, oldPower - ALL_CARDS.find(c => c.id === '084').pwr);
         }
     }
     // --- 085
