@@ -1230,7 +1230,7 @@ function RevealPower(tuileNode, cardRevealed) {
     }
 
     const trappist1G = document.querySelector('.tuile__content[data-card="037"]');
-    if (trappist1G) AddToTuile(trappist1G, 1);
+    if (trappist1G && tuileContent.dataset.card !== '037') AddToTuile(trappist1G, 1);
 
     const cancriD = document.querySelector('.tuile__content[data-card="046"]');
     if (cancriD && cardRevealed.type === TYPES[0]) {
