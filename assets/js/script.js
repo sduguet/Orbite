@@ -14,6 +14,8 @@ const popupRecapObjectif = popupRecap.querySelector('.objectif');
 const popupEnd = document.querySelector('.end');
 const popupEndBtnNext = popupEnd.querySelector('.end__btn--next');
 const popupEndBtnHome = popupEnd.querySelector('.end__btn--home');
+const nbCardsInHandNode = document.querySelector('.data__handNb');
+const nbCardsInDeckNode = document.querySelector('.data__deckNb');
 
 let history;
 let playerHand;
@@ -222,6 +224,9 @@ function HtmlCards() {
             card.remove();
         }
     });
+
+    nbCardsInHandNode.innerHTML = playerHand.length;
+    nbCardsInDeckNode.innerHTML = playerDeck.length;
 }
 
 
@@ -658,6 +663,7 @@ function RevealPower(tuileNode, cardRevealed) {
 
         case '017':
             playerDeck.push(deepClone(ALL_CARDS.find(card => card.id === '018')));
+            nbCardsInDeckNode.innerHTML = playerDeck.length;
 
             if (!localDex.allCards.find(c => c.id === '018').found) {
                 localDex.allCards.find(c => c.id === '018').found = Date.now();
@@ -1153,6 +1159,8 @@ function RevealPower(tuileNode, cardRevealed) {
         case '089':
             playerDeck.push(deepClone(ALL_CARDS.find(card => card.id === '022')));
             playerDeck.push(deepClone(ALL_CARDS.find(card => card.id === '022')));
+
+            nbCardsInDeckNode.innerHTML = playerDeck.length;
             break;
 
         case '090':
@@ -1654,6 +1662,8 @@ function End() {
     currentTurn = null;
     btnNextTurn.dataset.front = 'waiting';
     manaNode.innerHTML = '';
+    nbCardsInHandNode.innerHTML = '?';
+    nbCardsInDeckNode.innerHTML = '?';
 
     popupEnd.classList.remove('hide');
     popupEnd.style.opacity = '0';
@@ -2392,6 +2402,8 @@ function SetStarPower() {
         case '015':
             playerDeck.push(deepClone(ALL_CARDS.find(card => card.id === '022')));
             playerDeck.push(deepClone(ALL_CARDS.find(card => card.id === '022')));
+
+            nbCardsInDeckNode.innerHTML = playerDeck.length;
             break;
 
         case '017':
