@@ -1073,12 +1073,14 @@ body {
 }
 
 .target {
+	min-width: 215px;
 	padding: 16px;
 	border-radius: 0 0 0 8px;
 	background-color: rgba(255, 255, 255, 0.4);
 	box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 	color: white;
-	font-size: 18px;
+	font-size: 20px;
+	text-align: center;
 	text-shadow: 1px 1px 1px #1E1E1E90;
 	position: absolute;
 	top: 0;
@@ -1087,6 +1089,33 @@ body {
 
 	&__ptns {
 		font-weight: 700;
+	}
+}
+
+.data {
+	margin-top: 16px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+
+	&__hand,
+	&__deck {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+
+	&__handImg {
+		max-width: 54px;
+	}
+	&__deckImg {
+		max-width: 34px;
+	}
+
+	&__handNb,
+	&__deckNb {
+		min-width: 19px;
+		text-align: left;
 	}
 }
 
@@ -1387,13 +1416,13 @@ body {
 }
 
 @keyframes shake {
-	0%, 100% {
-		transform: translateX(0) rotate(0deg);
-	  }
-	  10%, 30%, 50%, 70%, 90% {
-		transform: translateX(-1px) rotate(-0.5deg);
-	  }
-	  20%, 40%, 60%, 80% {
-		transform: translateX(1px) rotate(0.5deg);
-	  }
-  }
+0%, 100% {
+	transform: translateX(0) rotate(0deg);
+	}
+	10%, 30%, 50%, 70%, 90% {
+	transform: translateX(-1px) rotate(-0.5deg);
+	}
+	20%, 40%, 60%, 80% {
+	transform: translateX(1px) rotate(0.5deg);
+	}
+}
