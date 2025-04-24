@@ -1,5 +1,5 @@
 const body = document.querySelector('body');
-const tuiles = document.querySelectorAll('.tuile');
+const tuiles = document.querySelectorAll('.terrain .tuile');
 const btnNextTurn = document.querySelector('.nextTurn');
 const manaNode = document.querySelector('.br .mana');
 const infoOvered = document.querySelector('.infoOvered');
@@ -513,8 +513,8 @@ function GetLastCardPlayed() {
 function RevealPower(tuileNode, cardRevealed) {
     const localDex = JSON.parse(localStorage.getItem('dex')) || {};
     const neighborsNode = GetAllNeighbors(tuileNode);
-    const tuileContent = tuileNode.querySelector('.tuile__content');
     const lastCardPlayed = GetLastCardPlayed() ? ALL_CARDS.find(card => card.id === GetLastCardPlayed()) : null;
+    let tuileContent = tuileNode.querySelector('.tuile__content');
 
     const blackHole = document.querySelector('.tuile--sun [data-card="016"]');
     if (blackHole && cardRevealed.type === TYPES[0]) {
@@ -1040,7 +1040,11 @@ function RevealPower(tuileNode, cardRevealed) {
                     neighborNode.dataset.pwr &&
                     parseInt(neighborNode.dataset.pwr) < maxPwr
                 ) {
-                    AddToTuile(neighborNode, maxPwr - parseInt(neighborNode.dataset.pwr));
+                    const originalParent = neighborNode.parentNode;
+                    MovePlatet(originalParent.dataset.id, 'test');
+                    AddToTuile(document.querySelector('.tuile[data-id="test"] .tuile__content'), maxPwr - parseInt(document.querySelector('.tuile[data-id="test"] .tuile__content').dataset.pwr));
+                    MovePlatet('test', originalParent.dataset.id);
+                    ClearOneTuile(document.querySelector('.tuile[data-id="test"]'));
                 }
             });
             break;
@@ -1225,16 +1229,85 @@ function RevealPower(tuileNode, cardRevealed) {
                 }
             });
 
-            if (voidNeighbors096.length > 0 ) {
+            if (voidNeighbors096.length > 0) {
                 setTimeout(() => {
                     const rvni = randomBetween(0, voidNeighbors096.length - 1);
+                    const tuileForClone = voidNeighbors096[rvni].parentNode;
+                    const originalParent = tuileContent.parentNode;
+                    MovePlatet(tuileContent.parentNode.dataset.id, 'test');
                     const clone = deepClone(ALL_CARDS.find(card => card.id === '097'));
-                    const currentPwr = parseInt(tuileContent.dataset.pwr);
-    
-                    SetHtmlInHexagon(voidNeighbors096[rvni], clone);
-                    AddToTuile(voidNeighbors096[rvni], currentPwr - clone.pwr);
+                    const currentPwr = parseInt(document.querySelector('.tuile[data-id="test"] .tuile__content').dataset.pwr);
+                    MovePlatet('test', originalParent.dataset.id);
+                    ClearOneTuile(document.querySelector('.tuile[data-id="test"]'));
+                    tuileContent = originalParent.querySelector('.tuile__content');
+                    
+                    const originelPosition= tuileContent.getBoundingClientRect();
+                    const clonePosition =tuileForClone.getBoundingClientRect();
+                    
+                    SetHtmlInHexagon(document.querySelector('.tuile[data-id="test"] .tuile__content'), clone);
+                    AddToTuile(document.querySelector('.tuile[data-id="test"] .tuile__content'), currentPwr - clone.pwr);
+                    MovePlatet('test',tuileForClone.dataset.id);
+                    UpdateCurrentAllPointsScored();
+
+                    // Animation
+                    const cloneContent = tuileForClone.querySelector('.tuile__content');
+                    const cloneHexa = tuileForClone.querySelector('.tuile__hexa');
+                    cloneHexa.setAttribute(
+                        'style',
+                        `
+                            transition: none;
+                            opacity: 0;
+                            transform: translate(${originelPosition.left - clonePosition.left}px, ${originelPosition.top - clonePosition.top}px);
+                        `
+                    );
+                    cloneContent.setAttribute(
+                        'style',
+                        `
+                            transition: none;
+                            opacity: 0;
+                            transform: translate(${originelPosition.left - clonePosition.left}px, ${originelPosition.top - clonePosition.top}px);
+                        `
+                    );
+                    setTimeout(() => {
+                        cloneHexa.setAttribute(
+                            'style',
+                            `
+                                transition: all 1s ease-in-out;
+                                opacity: 1;
+                                transform: translate(0, 0);
+                            `
+                        );
+                        cloneContent.setAttribute(
+                            'style',
+                            `
+                                transition: all 1s ease-in-out;
+                                opacity: 1;
+                                transform: translate(0, 0);
+                            `
+                        );
+
+                        setTimeout(() => {
+                            cloneHexa.removeAttribute('style');
+                            cloneContent.removeAttribute('style');
+                        }, 1000);
+                    }, 100);
                 }, 100);
             }
+            break;
+
+        case '098':
+            neighborsNode.forEach(neighborNode => {
+                if (
+                    neighborNode.dataset.card &&
+                    neighborNode.dataset.pwr
+                ) {
+                    const originalParent = neighborNode.parentNode;
+                    MovePlatet(originalParent.dataset.id, 'test');
+                    AddToTuile(document.querySelector('.tuile[data-id="test"] .tuile__content'), 3 - parseInt(document.querySelector('.tuile[data-id="test"] .tuile__content').dataset.pwr));
+                    MovePlatet('test', originalParent.dataset.id);
+                    ClearOneTuile(document.querySelector('.tuile[data-id="test"]'));
+                }
+            });
             break;
 
         default:
@@ -1679,6 +1752,26 @@ function PowerEndOfTurn() {
         AddToTuile(gliese581B, newBoost);
         gliese581B.dataset.boost = newBoost;
     }
+    // --- 099
+    const andromedaeE = document.querySelector('.tuile__content[data-card="099"]');
+    if (andromedaeE && playerMana > 0) {
+        const oneInThree = randomBetween(1, 3);
+        const originalParent = andromedaeE.parentNode;
+        originalParent.classList.add('bigShake');
+
+        if (oneInThree === 3) {
+            setTimeout(() => {
+                ClearOneTuile(originalParent);
+                SetHtmlInHexagon(document.querySelector('.tuile[data-id="test"] .tuile__content'), deepClone(ALL_CARDS.find(c => c.id === '100')))
+                MovePlatet('test', originalParent.dataset.id);
+                ClearOneTuile(document.querySelector('.tuile[data-id="test"]'));
+            }, 600);
+        }
+
+        setTimeout(() => {
+            originalParent.classList.remove('bigShake');
+        }, 750);
+    }
 
     UpdateCurrentAllPointsScored();
 }
@@ -1763,6 +1856,23 @@ function End() {
     ) {
         localDex.allCards.find(c => c.id === '094').found = Date.now();
         foundSomeCards = true;
+    }
+    if (
+        allPoints >= pointsToScore &&
+        !localDex.allCards.find(c => c.id === '099').found
+    ) {
+        let nbOneCardSupToEleven = 0;
+        allCardsWithPowerPlayed.forEach(card => {
+            if (
+                parseInt(card.dataset.pwr) >= 11 &&
+                ALL_CARDS.find(c => c.id === card.dataset.card).mana === 1
+            ) nbOneCardSupToEleven += 1;
+        });
+        if (nbOneCardSupToEleven >= 2 ) {
+            localDex.allCards.find(c => c.id === '099').found = Date.now();
+            localDex.allCards.find(c => c.id === '100').found = Date.now();
+            foundSomeCards = true;
+        }
     }
 
     if (foundSomeCards) {

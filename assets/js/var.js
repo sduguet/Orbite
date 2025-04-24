@@ -1141,8 +1141,9 @@ const ALL_CARDS = [
         'mana': 1,
         'pwr': 0,
         'desc': `[Fin de tour] S'il vous reste du mana non utilisé, 33% de chance de se transformer en Andromedae E BOOSTED.`,
-        'offrande': true,
+        'offrande': false,
         'playable': true,
+        'challenge': `Remporter une manche avec 2 cartes de côut initial 1 qui ont une puissance supérieur ou égale à 11.`,
     },
     {
         'id': '100',

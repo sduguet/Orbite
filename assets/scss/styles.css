@@ -1106,9 +1106,6 @@ body {
   top: 15px;
   right: 9px;
 }
-.deck-deckList__ele.shake {
-  animation: shake 1.2s infinite;
-}
 .deck-deckList__ele:nth-child(1) {
   animation-delay: 0s;
 }
@@ -1319,6 +1316,10 @@ body {
   pointer-events: none;
 }
 
+.shake {
+  animation: shake 1.2s infinite;
+}
+
 @keyframes shake {
   0%, 100% {
     transform: translateX(0) rotate(0deg);
@@ -1328,5 +1329,20 @@ body {
   }
   20%, 40%, 60%, 80% {
     transform: translateX(1px) rotate(0.5deg);
+  }
+}
+.bigShake {
+  animation: bigShake 0.8s infinite;
+}
+
+@keyframes bigShake {
+  0%, 100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-3px) rotate(-0.6deg);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(3px) rotate(0.6deg);
   }
 }/*# sourceMappingURL=styles.css.map */
