@@ -1206,6 +1206,37 @@ function RevealPower(tuileNode, cardRevealed) {
             }, 50);
             break;
 
+        case '095':
+            if (history[currentTurn]) {
+                const nbCardsPlayedThisTurn = history[currentTurn].length;
+                AddToTuile(tuileContent, nbCardsPlayedThisTurn * 2);
+            }
+            break;
+
+        case '096':
+            const voidNeighbors096 = [];
+            neighborsNode.forEach(neighborNode => {
+                if (
+                    !neighborNode.dataset.card &&
+                    !neighborNode.classList.contains('obstructed') &&
+                    !neighborNode.parentNode.classList.contains('tuile--sun')
+                ) {
+                    voidNeighbors096.push(neighborNode);
+                }
+            });
+
+            if (voidNeighbors096.length > 0 ) {
+                setTimeout(() => {
+                    const rvni = randomBetween(0, voidNeighbors096.length - 1);
+                    const clone = deepClone(ALL_CARDS.find(card => card.id === '097'));
+                    const currentPwr = parseInt(tuileContent.dataset.pwr);
+    
+                    SetHtmlInHexagon(voidNeighbors096[rvni], clone);
+                    AddToTuile(voidNeighbors096[rvni], currentPwr - clone.pwr);
+                }, 100);
+            }
+            break;
+
         default:
             break;
     }
@@ -2877,7 +2908,7 @@ function Keypress(e) {
             spaceCd = Date.now();
             break;
     }
-    
+
     if (cardToSelect) {
         const oldSelected = document.querySelector('.hand .card--selected');
         oldSelected?.classList.remove('card--selected');
