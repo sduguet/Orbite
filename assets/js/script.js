@@ -1683,7 +1683,7 @@ function End() {
     });
 
     popupEndScore.innerHTML = allPoints;
-    popupEndToal.innerHTML = `${pointsToScore} énergie cosmique`;
+    popupEndToal.innerHTML = `${pointsToScore} énergie${pointsToScore > 1 ? 's' : ''} cosmique${pointsToScore > 1 ? 's' : ''}`;
 
     const localDex = JSON.parse(localStorage.getItem('dex'));
     if (!localDex.maxPointsScored || localDex.maxPointsScored < allPoints) {
