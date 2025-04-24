@@ -1189,10 +1189,16 @@ function RevealPower(tuileNode, cardRevealed) {
             setTimeout(() => {
                 if (playerHand.length < 6) {
                     const availableCards = ALL_CARDS.filter(card => !startingCardsChosen.some(handCard => handCard === card.id));
-                    const randAvailableCards = deepClone(availableCards[randomBetween(0, availableCards.length - 1)]);
-                    randAvailableCards.mana -= 1;
-                    playerHand.push(randAvailableCards);
+                    const randCard = deepClone(availableCards[randomBetween(0, availableCards.length - 1)]);
+                    randCard.mana -= 1;
+                    playerHand.push(randCard);
                     HtmlCards();
+
+                    const localDex = JSON.parse(localStorage.getItem('dex'));
+                    if (!localDex.allCards.find(c => c.id === randCard.id).found) {
+                        localDex.allCards.find(c => c.id === randCard.id).found = Date.now();
+                        localStorage.setItem('dex', JSON.stringify(localDex));
+                    }
                 }
             }, 50);
             break;
@@ -1201,11 +1207,17 @@ function RevealPower(tuileNode, cardRevealed) {
             setTimeout(() => {
                 if (playerHand.length < 6) {
                     const availableCards = ALL_CARDS.filter(card => !startingCardsChosen.some(handCard => handCard === card.id) && card.mana === 6);
-                    const randAvailableCards = deepClone(availableCards[randomBetween(0, availableCards.length - 1)]);
-                    randAvailableCards.mana -= 2;
-                    randAvailableCards.pwr -= 2;
-                    playerHand.push(randAvailableCards);
+                    const randCard = deepClone(availableCards[randomBetween(0, availableCards.length - 1)]);
+                    randCard.mana -= 2;
+                    randCard.pwr -= 2;
+                    playerHand.push(randCard);
                     HtmlCards();
+
+                    const localDex = JSON.parse(localStorage.getItem('dex'));
+                    if (!localDex.allCards.find(c => c.id === randCard.id).found) {
+                        localDex.allCards.find(c => c.id === randCard.id).found = Date.now();
+                        localStorage.setItem('dex', JSON.stringify(localDex));
+                    }
                 }
             }, 50);
             break;
