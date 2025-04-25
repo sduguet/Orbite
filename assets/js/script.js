@@ -2934,6 +2934,18 @@ function UnlockCollectionna(localDex) {
         InitChangeDeck();
     } else if (nbCardFound !== localDex.allCards.length) {
         localDex.allCards.find(c => c.id === '105').found = false;
+
+        if (localDex.defaultDeck.includes('105')) {
+            const replacementCard = ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012']
+                .find(cardId => !localDex.defaultDeck.includes(cardId));
+
+            if (replacementCard) {
+                localDex.defaultDeck = localDex.defaultDeck.map(cardId =>
+                    cardId === '105' ? replacementCard : cardId
+                );
+            }
+        }
+
         localStorage.setItem('dex', JSON.stringify(localDex));
         UpdateCollection();
         InitChangeDeck();
