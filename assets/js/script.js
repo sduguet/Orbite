@@ -1895,7 +1895,9 @@ function PowerEndOfTurn() {
             allElements.includes(ELEMENTS[2]) &&
             allElements.includes(ELEMENTS[3])
         ) {
-            allPlanetsOnBoard.forEach(planet => {AddToTuile(planet, 1);});
+            allPlanetsOnBoard.forEach(planet => {
+                if (planet.dataset.card !== '105') AddToTuile(planet, 1);
+            });
         }
     }
 
