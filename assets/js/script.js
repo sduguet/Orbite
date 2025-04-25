@@ -514,6 +514,7 @@ function RevealPower(tuileNode, cardRevealed) {
     const localDex = JSON.parse(localStorage.getItem('dex')) || {};
     const neighborsNode = GetAllNeighbors(tuileNode);
     const lastCardPlayed = GetLastCardPlayed() ? ALL_CARDS.find(card => card.id === GetLastCardPlayed()) : null;
+    const allPlanetsOnBoard = Array.from(document.querySelectorAll(`.terrain .tuile__content[data-type="planet"]`));
     let tuileContent = tuileNode.querySelector('.tuile__content');
 
     const blackHole = document.querySelector('.tuile--sun [data-card="016"]');
@@ -1000,7 +1001,6 @@ function RevealPower(tuileNode, cardRevealed) {
             break;
 
         case '074':
-            const allPlanetsOnBoard = Array.from(document.querySelectorAll(`.tuile__content[data-type="planet"]`));
             const randomCardI = randomBetween(0, allPlanetsOnBoard.length - 1);
             const voidNeighbors074 = [];
 
@@ -1322,6 +1322,40 @@ function RevealPower(tuileNode, cardRevealed) {
             });
             break;
 
+        case '101':
+            let maxPwr101 = -100;
+            allPlanetsOnBoard.forEach(planet => maxPwr101 = Math.max(maxPwr101, parseInt(planet.dataset.pwr)));
+            allPlanetsOnBoard.forEach(planet => {
+                if (parseInt(planet.dataset.pwr) === maxPwr101) {
+                    planet.dataset.boost101 = 'true';
+                    AddToTuile(planet, 2);
+                }
+            })
+            break;
+
+        case '102':
+            const neighborsId = []
+            neighborsNode.forEach(neighborNode => {
+                if (neighborNode.dataset.type === TYPES[0]) {
+                    neighborsId.push(neighborNode.dataset.card);
+                }
+            });
+            allPlanetsOnBoard.forEach(planet => {
+                if (!neighborsId.includes(planet.dataset.card)) {
+                    AddToTuile(planet, 1);
+                }
+            });
+            break;
+
+        case '104':
+            if (playerHand.length > 0) {
+                const rand = randomBetween(0, playerHand.length - 1);
+                playerHand[rand].mana = Math.max(playerHand[rand].mana - 1, 0);
+                if (playerHand[rand].pwr || playerHand[rand].pwr === 0) playerHand[rand].pwr += 1;
+                HtmlCards();
+            }
+            break;
+
         default:
             break;
     }
@@ -1507,6 +1541,33 @@ function RevealPower(tuileNode, cardRevealed) {
         gliese581B.dataset.boost = newBoost;
     }
 
+    const europe = document.querySelector('.tuile__content[data-card="101"]');
+    if (europe) {
+        document.querySelectorAll('.tuile__content[data-boost101="true"]').forEach(planet => {
+            planet.dataset.boost101 = 'false';
+            AddToTuile(planet, -2);
+        })
+        let maxPwr101 = -100;
+        allPlanetsOnBoard.forEach(planet => maxPwr101 = Math.max(maxPwr101, parseInt(planet.dataset.pwr)));
+        allPlanetsOnBoard.forEach(planet => {
+            if (parseInt(planet.dataset.pwr) === maxPwr101) {
+                planet.dataset.boost101 = 'true';
+                AddToTuile(planet, 2);
+            }
+        })
+    }
+
+    const tethys = document.querySelector('.tuile__content[data-card="102"]');
+    if (tethys && cardRevealed.type === TYPES[0]) {
+        let hasTethysHasNeighbor = false;
+
+        neighborsNode.forEach(neighborNode => {
+            if (neighborNode.dataset.card === '102') hasTethysHasNeighbor = true;
+        });
+
+        if (!hasTethysHasNeighbor) AddToTuile(tuileContent, 1);
+    }    
+
     // Destroy treatment
     cardsDestroyToReset.forEach(cardIdDestroyed => {
         switch (cardIdDestroyed) {
@@ -1586,6 +1647,41 @@ function RevealPower(tuileNode, cardRevealed) {
                 allQuanticaLaranjaNeighbors.forEach(neighbor => {
                     if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) AddToTuile(neighbor, 1);
                 });
+                break;
+
+            case '101':
+                document.querySelectorAll('.tuile__content[data-boost101="true"]').forEach(planet => {
+                    planet.dataset.boost101 = 'false';
+                    AddToTuile(planet, -2);
+                });
+                break;
+
+            case '102':
+                const allTethysNeighbors = GetAllNeighbors(tethys.parentNode);
+                const allTethysNeighborsId = [];
+                allTethysNeighbors.forEach(neighbor => {
+                    if (neighbor.dataset.type === TYPES[0]) allTethysNeighborsId.push(neighbor.dataset.card);
+                });
+                allPlanetsOnBoard.forEach(planet => {
+                    if (!allTethysNeighborsId.includes(planet.dataset.card)) {
+                        AddToTuile(planet, -1);
+                    }
+                });
+                break;
+
+            case '103':
+                const tuile103 = document.querySelector('.tuile:has([data-card="103"])');
+                const animation = document.createElement('div');
+                animation.classList.add('wave');
+                tuile103.appendChild(animation);
+
+                setTimeout(() => {
+                    allPlanetsOnBoard.forEach(planet => {AddToTuile(planet, 1);});
+
+                    setTimeout(() => {
+                        animation.classList.remove('wave');
+                    }, 1000);
+                }, 1000);
                 break;
 
             default:
@@ -1784,6 +1880,24 @@ function PowerEndOfTurn() {
             originalParent.classList.remove('bigShake');
         }, 750);
     }
+    // --- 105
+    const collectiona = document.querySelector('.tuile__content[data-card="105"]');
+    if (collectiona) {
+        const allElements = [];
+        const allPlanetsOnBoard = document.querySelectorAll(`.terrain .tuile__content[data-type="${TYPES[0]}"]`);
+        allPlanetsOnBoard.forEach(planet => {
+            allElements.push(...ALL_CARDS.find(c => c.id === planet.dataset.card).element);
+        });
+
+        if (
+            allElements.includes(ELEMENTS[0]) &&
+            allElements.includes(ELEMENTS[1]) &&
+            allElements.includes(ELEMENTS[2]) &&
+            allElements.includes(ELEMENTS[3])
+        ) {
+            allPlanetsOnBoard.forEach(planet => {AddToTuile(planet, 1);});
+        }
+    }
 
     UpdateCurrentAllPointsScored();
 }
@@ -1876,7 +1990,7 @@ function End() {
         let nbOneCardSupToEleven = 0;
         allCardsWithPowerPlayed.forEach(card => {
             if (
-                parseInt(card.dataset.pwr) >= 11 &&
+                parseInt(card.dataset.pwr) >= 17 &&
                 ALL_CARDS.find(c => c.id === card.dataset.card).mana === 1
             ) nbOneCardSupToEleven += 1;
         });
@@ -1889,6 +2003,7 @@ function End() {
 
     if (foundSomeCards) {
         localStorage.setItem('dex', JSON.stringify(localDex));
+        UnlockCollectionna(localDex);
         UpdateCollection();
         InitChangeDeck();
     }
@@ -2775,6 +2890,8 @@ function InitLocalStorage() {
         InitChangeDeck();
     }
 
+    UnlockCollectionna(localDex);
+
     localStorage.setItem('dex', JSON.stringify(localDex));
 }
 
@@ -2802,6 +2919,25 @@ function RevertGaiamotto(localDex) {
     }
 
     return localDex;
+}
+
+
+function UnlockCollectionna(localDex) {
+    const nbCardFound = localDex.allCards.filter(c => c.found).length;
+    if (
+        nbCardFound === localDex.allCards.length - 1 &&
+        !localDex.allCards.filter(c => c.id === '105').found
+    ) {
+        localDex.allCards.find(c => c.id === '105').found = Date.now();
+        localStorage.setItem('dex', JSON.stringify(localDex));
+        UpdateCollection();
+        InitChangeDeck();
+    } else if (nbCardFound !== localDex.allCards.length) {
+        localDex.allCards.find(c => c.id === '105').found = false;
+        localStorage.setItem('dex', JSON.stringify(localDex));
+        UpdateCollection();
+        InitChangeDeck();
+    }
 }
 
 
@@ -2868,7 +3004,8 @@ function GetRegulation(cardId) {
         '048': 2,
         '057': 1,
         '081': 1,
-        '082': -1
+        '082': -1,
+        '102': 1 * (-1),
     };
     return regulations[cardId] || 0;
 }
