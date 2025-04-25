@@ -1246,7 +1246,7 @@ function RevealPower(tuileNode, cardRevealed) {
                     const rvni = randomBetween(0, voidNeighbors096.length - 1);
                     const tuileForClone = voidNeighbors096[rvni].parentNode;
                     const originalParent = tuileContent.parentNode;
-                    MovePlatet(tuileContent.parentNode.dataset.id, 'test');
+                    MovePlatet(originalParent.dataset.id, 'test');
                     const clone = deepClone(ALL_CARDS.find(card => card.id === '097'));
                     const currentPwr = parseInt(document.querySelector('.tuile[data-id="test"] .tuile__content').dataset.pwr);
                     MovePlatet('test', originalParent.dataset.id);
@@ -1254,12 +1254,15 @@ function RevealPower(tuileNode, cardRevealed) {
                     tuileContent = originalParent.querySelector('.tuile__content');
                     
                     const originelPosition= tuileContent.getBoundingClientRect();
-                    const clonePosition =tuileForClone.getBoundingClientRect();
+                    const clonePosition = tuileForClone.getBoundingClientRect();
                     
                     SetHtmlInHexagon(document.querySelector('.tuile[data-id="test"] .tuile__content'), clone);
                     AddToTuile(document.querySelector('.tuile[data-id="test"] .tuile__content'), currentPwr - clone.pwr);
-                    MovePlatet('test',tuileForClone.dataset.id);
+                    MovePlatet('test', tuileForClone.dataset.id);
                     UpdateCurrentAllPointsScored();
+                    if (originalParent.querySelector('[data-boost101="true"]')) {
+                        tuileForClone.querySelector('.tuile__content').dataset.boost101 = 'true';
+                    }
 
                     // Animation
                     const cloneContent = tuileForClone.querySelector('.tuile__content');
@@ -1895,7 +1898,9 @@ function PowerEndOfTurn() {
             allElements.includes(ELEMENTS[2]) &&
             allElements.includes(ELEMENTS[3])
         ) {
-            allPlanetsOnBoard.forEach(planet => {AddToTuile(planet, 1);});
+            allPlanetsOnBoard.forEach(planet => {
+                if (planet.dataset.card !== '105') AddToTuile(planet, 1);
+            });
         }
     }
 
