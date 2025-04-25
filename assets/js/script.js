@@ -1,5 +1,5 @@
 const body = document.querySelector('body');
-const tuiles = document.querySelectorAll('.tuile');
+const tuiles = document.querySelectorAll('.terrain .tuile');
 const btnNextTurn = document.querySelector('.nextTurn');
 const manaNode = document.querySelector('.br .mana');
 const infoOvered = document.querySelector('.infoOvered');
@@ -513,8 +513,9 @@ function GetLastCardPlayed() {
 function RevealPower(tuileNode, cardRevealed) {
     const localDex = JSON.parse(localStorage.getItem('dex')) || {};
     const neighborsNode = GetAllNeighbors(tuileNode);
-    const tuileContent = tuileNode.querySelector('.tuile__content');
     const lastCardPlayed = GetLastCardPlayed() ? ALL_CARDS.find(card => card.id === GetLastCardPlayed()) : null;
+    const allPlanetsOnBoard = Array.from(document.querySelectorAll(`.terrain .tuile__content[data-type="planet"]`));
+    let tuileContent = tuileNode.querySelector('.tuile__content');
 
     const blackHole = document.querySelector('.tuile--sun [data-card="016"]');
     if (blackHole && cardRevealed.type === TYPES[0]) {
@@ -1000,7 +1001,6 @@ function RevealPower(tuileNode, cardRevealed) {
             break;
 
         case '074':
-            const allPlanetsOnBoard = Array.from(document.querySelectorAll(`.tuile__content[data-type="planet"]`));
             const randomCardI = randomBetween(0, allPlanetsOnBoard.length - 1);
             const voidNeighbors074 = [];
 
@@ -1040,7 +1040,11 @@ function RevealPower(tuileNode, cardRevealed) {
                     neighborNode.dataset.pwr &&
                     parseInt(neighborNode.dataset.pwr) < maxPwr
                 ) {
-                    AddToTuile(neighborNode, maxPwr - parseInt(neighborNode.dataset.pwr));
+                    const originalParent = neighborNode.parentNode;
+                    MovePlatet(originalParent.dataset.id, 'test');
+                    AddToTuile(document.querySelector('.tuile[data-id="test"] .tuile__content'), maxPwr - parseInt(document.querySelector('.tuile[data-id="test"] .tuile__content').dataset.pwr));
+                    MovePlatet('test', originalParent.dataset.id);
+                    ClearOneTuile(document.querySelector('.tuile[data-id="test"]'));
                 }
             });
             break;
@@ -1185,10 +1189,16 @@ function RevealPower(tuileNode, cardRevealed) {
             setTimeout(() => {
                 if (playerHand.length < 6) {
                     const availableCards = ALL_CARDS.filter(card => !startingCardsChosen.some(handCard => handCard === card.id));
-                    const randAvailableCards = deepClone(availableCards[randomBetween(0, availableCards.length - 1)]);
-                    randAvailableCards.mana -= 1;
-                    playerHand.push(randAvailableCards);
+                    const randCard = deepClone(availableCards[randomBetween(0, availableCards.length - 1)]);
+                    randCard.mana -= 1;
+                    playerHand.push(randCard);
                     HtmlCards();
+
+                    const localDex = JSON.parse(localStorage.getItem('dex'));
+                    if (!localDex.allCards.find(c => c.id === randCard.id).found) {
+                        localDex.allCards.find(c => c.id === randCard.id).found = Date.now();
+                        localStorage.setItem('dex', JSON.stringify(localDex));
+                    }
                 }
             }, 50);
             break;
@@ -1197,13 +1207,153 @@ function RevealPower(tuileNode, cardRevealed) {
             setTimeout(() => {
                 if (playerHand.length < 6) {
                     const availableCards = ALL_CARDS.filter(card => !startingCardsChosen.some(handCard => handCard === card.id) && card.mana === 6);
-                    const randAvailableCards = deepClone(availableCards[randomBetween(0, availableCards.length - 1)]);
-                    randAvailableCards.mana -= 2;
-                    randAvailableCards.pwr -= 2;
-                    playerHand.push(randAvailableCards);
+                    const randCard = deepClone(availableCards[randomBetween(0, availableCards.length - 1)]);
+                    randCard.mana -= 2;
+                    randCard.pwr -= 2;
+                    playerHand.push(randCard);
                     HtmlCards();
+
+                    const localDex = JSON.parse(localStorage.getItem('dex'));
+                    if (!localDex.allCards.find(c => c.id === randCard.id).found) {
+                        localDex.allCards.find(c => c.id === randCard.id).found = Date.now();
+                        localStorage.setItem('dex', JSON.stringify(localDex));
+                    }
                 }
             }, 50);
+            break;
+
+        case '095':
+            if (history[currentTurn]) {
+                const nbCardsPlayedThisTurn = history[currentTurn].length;
+                AddToTuile(tuileContent, nbCardsPlayedThisTurn * 2);
+            }
+            break;
+
+        case '096':
+            const voidNeighbors096 = [];
+            neighborsNode.forEach(neighborNode => {
+                if (
+                    !neighborNode.dataset.card &&
+                    !neighborNode.classList.contains('obstructed') &&
+                    !neighborNode.parentNode.classList.contains('tuile--sun')
+                ) {
+                    voidNeighbors096.push(neighborNode);
+                }
+            });
+
+            if (voidNeighbors096.length > 0) {
+                setTimeout(() => {
+                    const rvni = randomBetween(0, voidNeighbors096.length - 1);
+                    const tuileForClone = voidNeighbors096[rvni].parentNode;
+                    const originalParent = tuileContent.parentNode;
+                    MovePlatet(tuileContent.parentNode.dataset.id, 'test');
+                    const clone = deepClone(ALL_CARDS.find(card => card.id === '097'));
+                    const currentPwr = parseInt(document.querySelector('.tuile[data-id="test"] .tuile__content').dataset.pwr);
+                    MovePlatet('test', originalParent.dataset.id);
+                    ClearOneTuile(document.querySelector('.tuile[data-id="test"]'));
+                    tuileContent = originalParent.querySelector('.tuile__content');
+                    
+                    const originelPosition= tuileContent.getBoundingClientRect();
+                    const clonePosition =tuileForClone.getBoundingClientRect();
+                    
+                    SetHtmlInHexagon(document.querySelector('.tuile[data-id="test"] .tuile__content'), clone);
+                    AddToTuile(document.querySelector('.tuile[data-id="test"] .tuile__content'), currentPwr - clone.pwr);
+                    MovePlatet('test',tuileForClone.dataset.id);
+                    UpdateCurrentAllPointsScored();
+
+                    // Animation
+                    const cloneContent = tuileForClone.querySelector('.tuile__content');
+                    const cloneHexa = tuileForClone.querySelector('.tuile__hexa');
+                    cloneHexa.setAttribute(
+                        'style',
+                        `
+                            transition: none;
+                            opacity: 0;
+                            transform: translate(${originelPosition.left - clonePosition.left}px, ${originelPosition.top - clonePosition.top}px);
+                        `
+                    );
+                    cloneContent.setAttribute(
+                        'style',
+                        `
+                            transition: none;
+                            opacity: 0;
+                            transform: translate(${originelPosition.left - clonePosition.left}px, ${originelPosition.top - clonePosition.top}px);
+                        `
+                    );
+                    setTimeout(() => {
+                        cloneHexa.setAttribute(
+                            'style',
+                            `
+                                transition: all 1s ease-in-out;
+                                opacity: 1;
+                                transform: translate(0, 0);
+                            `
+                        );
+                        cloneContent.setAttribute(
+                            'style',
+                            `
+                                transition: all 1s ease-in-out;
+                                opacity: 1;
+                                transform: translate(0, 0);
+                            `
+                        );
+
+                        setTimeout(() => {
+                            cloneHexa.removeAttribute('style');
+                            cloneContent.removeAttribute('style');
+                        }, 1000);
+                    }, 100);
+                }, 100);
+            }
+            break;
+
+        case '098':
+            neighborsNode.forEach(neighborNode => {
+                if (
+                    neighborNode.dataset.card &&
+                    neighborNode.dataset.pwr
+                ) {
+                    const originalParent = neighborNode.parentNode;
+                    MovePlatet(originalParent.dataset.id, 'test');
+                    AddToTuile(document.querySelector('.tuile[data-id="test"] .tuile__content'), 3 - parseInt(document.querySelector('.tuile[data-id="test"] .tuile__content').dataset.pwr));
+                    MovePlatet('test', originalParent.dataset.id);
+                    ClearOneTuile(document.querySelector('.tuile[data-id="test"]'));
+                }
+            });
+            break;
+
+        case '101':
+            let maxPwr101 = -100;
+            allPlanetsOnBoard.forEach(planet => maxPwr101 = Math.max(maxPwr101, parseInt(planet.dataset.pwr)));
+            allPlanetsOnBoard.forEach(planet => {
+                if (parseInt(planet.dataset.pwr) === maxPwr101) {
+                    planet.dataset.boost101 = 'true';
+                    AddToTuile(planet, 2);
+                }
+            })
+            break;
+
+        case '102':
+            const neighborsId = []
+            neighborsNode.forEach(neighborNode => {
+                if (neighborNode.dataset.type === TYPES[0]) {
+                    neighborsId.push(neighborNode.dataset.card);
+                }
+            });
+            allPlanetsOnBoard.forEach(planet => {
+                if (!neighborsId.includes(planet.dataset.card)) {
+                    AddToTuile(planet, 1);
+                }
+            });
+            break;
+
+        case '104':
+            if (playerHand.length > 0) {
+                const rand = randomBetween(0, playerHand.length - 1);
+                playerHand[rand].mana = Math.max(playerHand[rand].mana - 1, 0);
+                if (playerHand[rand].pwr || playerHand[rand].pwr === 0) playerHand[rand].pwr += 1;
+                HtmlCards();
+            }
             break;
 
         default:
@@ -1391,6 +1541,33 @@ function RevealPower(tuileNode, cardRevealed) {
         gliese581B.dataset.boost = newBoost;
     }
 
+    const europe = document.querySelector('.tuile__content[data-card="101"]');
+    if (europe) {
+        document.querySelectorAll('.tuile__content[data-boost101="true"]').forEach(planet => {
+            planet.dataset.boost101 = 'false';
+            AddToTuile(planet, -2);
+        })
+        let maxPwr101 = -100;
+        allPlanetsOnBoard.forEach(planet => maxPwr101 = Math.max(maxPwr101, parseInt(planet.dataset.pwr)));
+        allPlanetsOnBoard.forEach(planet => {
+            if (parseInt(planet.dataset.pwr) === maxPwr101) {
+                planet.dataset.boost101 = 'true';
+                AddToTuile(planet, 2);
+            }
+        })
+    }
+
+    const tethys = document.querySelector('.tuile__content[data-card="102"]');
+    if (tethys && cardRevealed.type === TYPES[0]) {
+        let hasTethysHasNeighbor = false;
+
+        neighborsNode.forEach(neighborNode => {
+            if (neighborNode.dataset.card === '102') hasTethysHasNeighbor = true;
+        });
+
+        if (!hasTethysHasNeighbor) AddToTuile(tuileContent, 1);
+    }    
+
     // Destroy treatment
     cardsDestroyToReset.forEach(cardIdDestroyed => {
         switch (cardIdDestroyed) {
@@ -1470,6 +1647,41 @@ function RevealPower(tuileNode, cardRevealed) {
                 allQuanticaLaranjaNeighbors.forEach(neighbor => {
                     if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) AddToTuile(neighbor, 1);
                 });
+                break;
+
+            case '101':
+                document.querySelectorAll('.tuile__content[data-boost101="true"]').forEach(planet => {
+                    planet.dataset.boost101 = 'false';
+                    AddToTuile(planet, -2);
+                });
+                break;
+
+            case '102':
+                const allTethysNeighbors = GetAllNeighbors(tethys.parentNode);
+                const allTethysNeighborsId = [];
+                allTethysNeighbors.forEach(neighbor => {
+                    if (neighbor.dataset.type === TYPES[0]) allTethysNeighborsId.push(neighbor.dataset.card);
+                });
+                allPlanetsOnBoard.forEach(planet => {
+                    if (!allTethysNeighborsId.includes(planet.dataset.card)) {
+                        AddToTuile(planet, -1);
+                    }
+                });
+                break;
+
+            case '103':
+                const tuile103 = document.querySelector('.tuile:has([data-card="103"])');
+                const animation = document.createElement('div');
+                animation.classList.add('wave');
+                tuile103.appendChild(animation);
+
+                setTimeout(() => {
+                    allPlanetsOnBoard.forEach(planet => {AddToTuile(planet, 1);});
+
+                    setTimeout(() => {
+                        animation.classList.remove('wave');
+                    }, 1000);
+                }, 1000);
                 break;
 
             default:
@@ -1648,6 +1860,44 @@ function PowerEndOfTurn() {
         AddToTuile(gliese581B, newBoost);
         gliese581B.dataset.boost = newBoost;
     }
+    // --- 099
+    const andromedaeE = document.querySelector('.tuile__content[data-card="099"]');
+    if (andromedaeE && playerMana > 0) {
+        const oneInThree = randomBetween(1, 3);
+        const originalParent = andromedaeE.parentNode;
+        originalParent.classList.add('bigShake');
+
+        if (oneInThree === 3) {
+            setTimeout(() => {
+                ClearOneTuile(originalParent);
+                SetHtmlInHexagon(document.querySelector('.tuile[data-id="test"] .tuile__content'), deepClone(ALL_CARDS.find(c => c.id === '100')))
+                MovePlatet('test', originalParent.dataset.id);
+                ClearOneTuile(document.querySelector('.tuile[data-id="test"]'));
+            }, 600);
+        }
+
+        setTimeout(() => {
+            originalParent.classList.remove('bigShake');
+        }, 750);
+    }
+    // --- 105
+    const collectiona = document.querySelector('.tuile__content[data-card="105"]');
+    if (collectiona) {
+        const allElements = [];
+        const allPlanetsOnBoard = document.querySelectorAll(`.terrain .tuile__content[data-type="${TYPES[0]}"]`);
+        allPlanetsOnBoard.forEach(planet => {
+            allElements.push(...ALL_CARDS.find(c => c.id === planet.dataset.card).element);
+        });
+
+        if (
+            allElements.includes(ELEMENTS[0]) &&
+            allElements.includes(ELEMENTS[1]) &&
+            allElements.includes(ELEMENTS[2]) &&
+            allElements.includes(ELEMENTS[3])
+        ) {
+            allPlanetsOnBoard.forEach(planet => {AddToTuile(planet, 1);});
+        }
+    }
 
     UpdateCurrentAllPointsScored();
 }
@@ -1733,9 +1983,27 @@ function End() {
         localDex.allCards.find(c => c.id === '094').found = Date.now();
         foundSomeCards = true;
     }
+    if (
+        allPoints >= pointsToScore &&
+        !localDex.allCards.find(c => c.id === '099').found
+    ) {
+        let nbOneCardSupToEleven = 0;
+        allCardsWithPowerPlayed.forEach(card => {
+            if (
+                parseInt(card.dataset.pwr) >= 17 &&
+                ALL_CARDS.find(c => c.id === card.dataset.card).mana === 1
+            ) nbOneCardSupToEleven += 1;
+        });
+        if (nbOneCardSupToEleven >= 2 ) {
+            localDex.allCards.find(c => c.id === '099').found = Date.now();
+            localDex.allCards.find(c => c.id === '100').found = Date.now();
+            foundSomeCards = true;
+        }
+    }
 
     if (foundSomeCards) {
         localStorage.setItem('dex', JSON.stringify(localDex));
+        UnlockCollectionna(localDex);
         UpdateCollection();
         InitChangeDeck();
     }
@@ -2622,6 +2890,8 @@ function InitLocalStorage() {
         InitChangeDeck();
     }
 
+    UnlockCollectionna(localDex);
+
     localStorage.setItem('dex', JSON.stringify(localDex));
 }
 
@@ -2649,6 +2919,37 @@ function RevertGaiamotto(localDex) {
     }
 
     return localDex;
+}
+
+
+function UnlockCollectionna(localDex) {
+    const nbCardFound = localDex.allCards.filter(c => c.found).length;
+    if (
+        nbCardFound === localDex.allCards.length - 1 &&
+        !localDex.allCards.filter(c => c.id === '105').found
+    ) {
+        localDex.allCards.find(c => c.id === '105').found = Date.now();
+        localStorage.setItem('dex', JSON.stringify(localDex));
+        UpdateCollection();
+        InitChangeDeck();
+    } else if (nbCardFound !== localDex.allCards.length) {
+        localDex.allCards.find(c => c.id === '105').found = false;
+
+        if (localDex.defaultDeck.includes('105')) {
+            const replacementCard = ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012']
+                .find(cardId => !localDex.defaultDeck.includes(cardId));
+
+            if (replacementCard) {
+                localDex.defaultDeck = localDex.defaultDeck.map(cardId =>
+                    cardId === '105' ? replacementCard : cardId
+                );
+            }
+        }
+
+        localStorage.setItem('dex', JSON.stringify(localDex));
+        UpdateCollection();
+        InitChangeDeck();
+    }
 }
 
 
@@ -2715,7 +3016,8 @@ function GetRegulation(cardId) {
         '048': 2,
         '057': 1,
         '081': 1,
-        '082': -1
+        '082': -1,
+        '102': 1 * (-1),
     };
     return regulations[cardId] || 0;
 }
@@ -2877,7 +3179,7 @@ function Keypress(e) {
             spaceCd = Date.now();
             break;
     }
-    
+
     if (cardToSelect) {
         const oldSelected = document.querySelector('.hand .card--selected');
         oldSelected?.classList.remove('card--selected');
