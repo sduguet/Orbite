@@ -133,6 +133,18 @@ function SetPlayerHand() {
         playerHand.push(deepClone(proximaB));
     }
 
+    const aaa = playerDeck.find(card => card.id === '043');
+    if (aaa) {
+        playerDeck = playerDeck.filter(card => card.id !== '043');
+        playerHand.push(deepClone(aaa));
+    }
+
+    const bbb = playerDeck.find(card => card.id === '107');
+    if (bbb) {
+        playerDeck = playerDeck.filter(card => card.id !== '107');
+        playerHand.push(deepClone(bbb));
+    }
+
     while (playerHand.length < 3) {
         DrawCard();
     }
@@ -717,28 +729,9 @@ function RevealPower(tuileNode, cardRevealed) {
         case '026':
             const allPlanetsOnBoardExecptEris = Array.from(document.querySelectorAll(`.tuile__content[data-type="${TYPES[0]}"][data-card]:not([data-card="026"])`));
             const randomIndex = randomBetween(0, allPlanetsOnBoardExecptEris.length - 1);
-            allPlanetsOnBoardExecptEris[randomIndex].classList.add('destroyed');
-            cardsDestroyToReset.push(allPlanetsOnBoardExecptEris[randomIndex].dataset.card);
-
-            // Animation
-            const svg = allPlanetsOnBoardExecptEris[randomIndex].parentNode.querySelector('.tuile__hexa path');
-            if (svg) {
-                svg.style.transition = 'filter .5s ease-in-out';
-                svg.style.filter = 'invert(1)';
-                setTimeout(() => {
-                    svg.style.filter = 'invert(0)';
-                    allPlanetsOnBoardExecptEris[randomIndex].style.transition = 'all 2s ease';
-                    allPlanetsOnBoardExecptEris[randomIndex].style.opacity = '0';
-
-                    const content = allPlanetsOnBoardExecptEris[randomIndex].parentNode.querySelector('.tuile__hexa');
-                    content.style.transition = 'all 2s ease';
-                    content.style.opacity = '0';
-
-                    setTimeout(() => {
-                        ClearOneTuile(allPlanetsOnBoardExecptEris[randomIndex].parentNode);
-                        UpdateCurrentAllPointsScored();
-                    }, 2000);
-                }, 500);
+            if (allPlanetsOnBoardExecptEris[randomIndex].dataset.card) {
+                allPlanetsOnBoardExecptEris[randomIndex].classList.add('destroyed');
+                cardsDestroyToReset.push(allPlanetsOnBoardExecptEris[randomIndex].dataset.card);
             }
             break;
 
@@ -799,30 +792,9 @@ function RevealPower(tuileNode, cardRevealed) {
         case '043':
             neighborsNode.forEach(neighborNode => {
                 if (!neighborNode.parentNode.classList.contains('tuile--sun')) {
-                    neighborNode.classList.add('destroyed');
-                    cardsDestroyToReset.push(neighborNode.dataset.card);
-
-                    // Animation
-                    const svg = neighborNode.parentNode.querySelector('.tuile__hexa path');
-                    if (svg) {
-                        svg.style.transition = 'filter .5s ease-in-out';
-                        svg.style.filter = 'invert(1)';
-
-                        setTimeout(() => {
-                            svg.style.filter = 'invert(0)';
-                            svg.style.transition = 'all 2s ease';
-                            svg.style.opacity = '0';
-                            neighborNode.style.opacity = '0';
-
-                            const content = neighborNode.parentNode.querySelector('.tuile__hexa');
-                            content.style.transition = 'all 2s ease';
-                            content.style.opacity = '0';
-
-                            setTimeout(() => {
-                                ClearOneTuile(neighborNode.parentNode);
-                                UpdateCurrentAllPointsScored();
-                            }, 2000);
-                        }, 500);
+                    if (neighborNode.dataset.card) {
+                        neighborNode.classList.add('destroyed');
+                        cardsDestroyToReset.push(neighborNode.dataset.card);
                     }
                 }
             });
@@ -1573,6 +1545,9 @@ function RevealPower(tuileNode, cardRevealed) {
 
     // Destroy treatment
     cardsDestroyToReset.forEach(cardIdDestroyed => {
+        const cardDestroyedParent = document.querySelector(`.tuile:has([data-card="${cardIdDestroyed}"]`);
+        let needToDeleteTuile = true;        
+
         switch (cardIdDestroyed) {
             case '023':
                 document.querySelectorAll(`.tuile__content[data-type="${TYPES[0]}"]`).forEach(tuile => {
@@ -1673,22 +1648,54 @@ function RevealPower(tuileNode, cardRevealed) {
                 break;
 
             case '103':
-                const tuile103 = document.querySelector('.tuile:has([data-card="103"])');
                 const animation = document.createElement('div');
                 animation.classList.add('wave');
-                tuile103.appendChild(animation);
+                cardDestroyedParent.appendChild(animation);
+                allPlanetsOnBoard.forEach(planet => AddToTuile(planet, 1));
 
                 setTimeout(() => {
-                    allPlanetsOnBoard.forEach(planet => {AddToTuile(planet, 1);});
+                    animation.classList.remove('wave');
+                }, 2000);
+                break;
 
-                    setTimeout(() => {
-                        animation.classList.remove('wave');
-                    }, 1000);
-                }, 1000);
+            case '106':
+                const shiva = document.querySelector('.tuile__content[data-card="106"]');
+                // to do
+                break;
+
+            case '107':
+                const nemesisTuile = document.querySelector('.tuile:has([data-card="107"])');
+                ClearOneTuile(nemesisTuile);
+                SetHtmlInHexagon(nemesisTuile.querySelector('.tuile[data-id="test"] .tuile__content'), deepClone(ALL_CARDS.find(card => card.id === '108')));
+                setTimeout(() => {
+                    MovePlatet('test', cardDestroyedParent.dataset.id);
+                    ClearOneTuile('test');
+                }, 2100);
                 break;
 
             default:
                 break;
+        }
+
+        // Animation
+        const svg = cardDestroyedParent.querySelector('.tuile__hexa path');
+        if (svg && needToDeleteTuile) {
+            svg.style.transition = 'filter .5s ease-in-out';
+            svg.style.filter = 'invert(1)';
+            setTimeout(() => {
+                svg.style.filter = 'invert(0)';
+                cardDestroyedParent.style.transition = 'all 2s ease';
+                cardDestroyedParent.style.opacity = '0';
+
+                const content = cardDestroyedParent.querySelector('.tuile__hexa');
+                content.style.transition = 'all 2s ease';
+                content.style.opacity = '0';
+
+                setTimeout(() => {
+                    ClearOneTuile(cardDestroyedParent);
+                    UpdateCurrentAllPointsScored();
+                }, 2000);
+            }, 500);
         }
 
         // suppr du tableau après traitement
