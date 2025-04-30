@@ -38,6 +38,7 @@ let pointsToScore;
 let deckAdd;
 let deckRemove;
 let maxCardsInHand;
+let listPwrDestroyInRound
 
 Init();
 function Init() {
@@ -133,17 +134,17 @@ function SetPlayerHand() {
         playerHand.push(deepClone(proximaB));
     }
 
-    const aaa = playerDeck.find(card => card.id === '043');
+    const aaa = playerDeck.find(card => card.id === '111');
     if (aaa) {
-        playerDeck = playerDeck.filter(card => card.id !== '043');
+        playerDeck = playerDeck.filter(card => card.id !== '111');
         playerHand.push(deepClone(aaa));
     }
 
-    const bbb = playerDeck.find(card => card.id === '107');
-    if (bbb) {
-        playerDeck = playerDeck.filter(card => card.id !== '107');
-        playerHand.push(deepClone(bbb));
-    }
+    // const bbb = playerDeck.find(card => card.id === '107');
+    // if (bbb) {
+    //     playerDeck = playerDeck.filter(card => card.id !== '107');
+    //     playerHand.push(deepClone(bbb));
+    // }
 
     while (playerHand.length < 3) {
         DrawCard();
@@ -1331,12 +1332,23 @@ function RevealPower(tuileNode, cardRevealed) {
             }
             break;
 
+        case '110':
+            const cardNeighbors = neighborsNode.filter(neighbor => neighbor.dataset.card && neighbor.dataset.type !== TYPES[3]);
+            const shuffled = cardNeighbors.sort(() => Math.random() - 0.5);
+            const selectedNeighbors = shuffled.slice(0, 3);
+            selectedNeighbors.forEach(neighbor => {
+                neighbor.classList.add('destroyed');
+                cardsDestroyToReset.push(neighbor.dataset.card);
+            });
+            break;
+
         default:
             break;
     }
 
+    const uranus = document.querySelector('.tuile__content[data-card="023"]');
     if (
-        document.querySelector('.tuile__content[data-card="023"]') &&
+        uranus &&
         cardRevealed.id !== '023' &&
         tuileContent.dataset.type === TYPES[0]
     ) {
@@ -1546,7 +1558,13 @@ function RevealPower(tuileNode, cardRevealed) {
     // Destroy treatment
     cardsDestroyToReset.forEach(cardIdDestroyed => {
         const cardDestroyedParent = document.querySelector(`.tuile:has([data-card="${cardIdDestroyed}"]`);
-        let needToDeleteTuile = true;        
+        let needToDeleteTuile = true;
+
+        const cardPwr = cardDestroyedParent.querySelector('.tuile__content').dataset.pwr
+            ? parseInt(cardDestroyedParent.querySelector('.tuile__content').dataset.pwr)
+            : 0;
+
+        listPwrDestroyInRound.push(cardPwr);
 
         switch (cardIdDestroyed) {
             case '023':
@@ -1664,17 +1682,64 @@ function RevealPower(tuileNode, cardRevealed) {
                 break;
 
             case '107':
-                const nemesisTuile = document.querySelector('.tuile:has([data-card="107"])');
-                ClearOneTuile(nemesisTuile);
-                SetHtmlInHexagon(nemesisTuile.querySelector('.tuile[data-id="test"] .tuile__content'), deepClone(ALL_CARDS.find(card => card.id === '108')));
                 setTimeout(() => {
+                    SetHtmlInHexagon(document.querySelector('.tuile[data-id="test"] .tuile__content'), deepClone(ALL_CARDS.find(card => card.id === '108')));
                     MovePlatet('test', cardDestroyedParent.dataset.id);
                     ClearOneTuile('test');
-                }, 2100);
+                    if (uranus) AddToTuile(cardDestroyedParent.querySelector('.tuile__content'), 1);
+
+                    const nemesisTuile = document.querySelector('.terrain .tuile:has([data-card="108"])');
+                    nemesisTuile.setAttribute(
+                        'style',
+                        `
+                            transform: rotate(720deg);
+                            transition: all 0s;
+                        `
+                    );
+
+                    setTimeout(() => {
+                        nemesisTuile.setAttribute(
+                            'style',
+                            `
+                                transform: rotate(0deg);
+                                transition: all 1s ease-in-out;
+                            `
+                        );
+                        setTimeout(() => {
+                            nemesisTuile.removeAttribute('style');
+                        }, 1000);
+                    }, 10);
+                }, 2550);
+                break;
+
+            case '111':
+                const oldPwr = parseInt(cardDestroyedParent.querySelector('.tuile__content').dataset.pwr);
+
+                setTimeout(() => {
+                    const allVoidTuiles = Array.from(document.querySelectorAll('.terrain .tuile:not(.obstructed):not(.tuile--sun):not(:has([data-card]))'));
+                    const shuffled = allVoidTuiles.sort(() => Math.random() - 0.5);
+                    const selectedVoidTuile = shuffled.slice(0, 1)[0];
+
+                    SetHtmlInHexagon(document.querySelector('.tuile[data-id="test"] .tuile__content'), deepClone(ALL_CARDS.find(card => card.id === '111')));
+                    MovePlatet('test', cardDestroyedParent.dataset.id);
+                    ClearOneTuile('test');
+                    if (uranus) AddToTuile(cardDestroyedParent.querySelector('.tuile__content'), 1);
+                    const currentPwr = parseInt(cardDestroyedParent.querySelector('.tuile__content').dataset.pwr);
+                    if (parseInt(currentPwr) < oldPwr) {
+                        AddToTuile(cardDestroyedParent.querySelector('.tuile__content'), oldPwr - currentPwr);
+                    }
+                    MovePlatet(cardDestroyedParent.dataset.id, selectedVoidTuile.parentNode.dataset.id);
+                }, 2550);
                 break;
 
             default:
                 break;
+        }
+
+        const thanatosCard = playerHand.find(card => card.id === '109') || playerDeck.find(card => card.id === '109');
+        if (thanatosCard) {
+            thanatosCard.mana = Math.max(thanatosCard.mana - 1, 0);
+            HtmlCards();
         }
 
         // Animation
@@ -1684,12 +1749,14 @@ function RevealPower(tuileNode, cardRevealed) {
             svg.style.filter = 'invert(1)';
             setTimeout(() => {
                 svg.style.filter = 'invert(0)';
-                cardDestroyedParent.style.transition = 'all 2s ease';
-                cardDestroyedParent.style.opacity = '0';
 
-                const content = cardDestroyedParent.querySelector('.tuile__hexa');
-                content.style.transition = 'all 2s ease';
-                content.style.opacity = '0';
+                const tuileHexa = cardDestroyedParent.querySelector('.tuile__hexa');
+                tuileHexa.style.transition = 'all 2s ease';
+                tuileHexa.style.opacity = '0';
+
+                const tuileContent = cardDestroyedParent.querySelector('.tuile__content');
+                tuileContent.style.transition = 'all 2s ease';
+                tuileContent.style.opacity = '0';
 
                 setTimeout(() => {
                     ClearOneTuile(cardDestroyedParent);
@@ -2222,6 +2289,7 @@ function InitializationGame() {
     manaBonus = 0;
     manaMaxBonus = 0;
     cardsDestroyToReset = [];
+    listPwrDestroyInRound = [];
     btnCd = 0;
     spaceCd = 0;
     maxCardsInHand = 6;
