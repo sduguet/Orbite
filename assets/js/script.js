@@ -38,7 +38,9 @@ let pointsToScore;
 let deckAdd;
 let deckRemove;
 let maxCardsInHand;
-let listPwrDestroyInRound
+let listPwrDestroyInRound;
+let wasShivaDestroyedLastTurn;
+let wasCerbereDestroyedLastTurn;
 
 Init();
 function Init() {
@@ -134,17 +136,11 @@ function SetPlayerHand() {
         playerHand.push(deepClone(proximaB));
     }
 
-    const aaa = playerDeck.find(card => card.id === '111');
+    const aaa = playerDeck.find(card => card.id === '117');
     if (aaa) {
-        playerDeck = playerDeck.filter(card => card.id !== '111');
+        playerDeck = playerDeck.filter(card => card.id !== '117');
         playerHand.push(deepClone(aaa));
     }
-
-    // const bbb = playerDeck.find(card => card.id === '107');
-    // if (bbb) {
-    //     playerDeck = playerDeck.filter(card => card.id !== '107');
-    //     playerHand.push(deepClone(bbb));
-    // }
 
     while (playerHand.length < 3) {
         DrawCard();
@@ -557,7 +553,7 @@ function RevealPower(tuileNode, cardRevealed) {
         AddToTuile(trappist1B, 3);
         document.querySelectorAll('.waitingTRAPPIST1B').forEach(x => x.classList.remove('waitingTRAPPIST1B'));
     }
-    const hecate = document.querySelector('.tuile__content[data-card="045"]');
+    let hecate = document.querySelector('.tuile__content[data-card="045"]');
     if (hecate && cardRevealed.type === TYPES[0]) {
         neighborsNode.forEach(neighborNode => {
             if (neighborNode.dataset.card === '045') AddToTuile(tuileContent, -4);
@@ -728,7 +724,7 @@ function RevealPower(tuileNode, cardRevealed) {
             break;
 
         case '026':
-            const allPlanetsOnBoardExecptEris = Array.from(document.querySelectorAll(`.tuile__content[data-type="${TYPES[0]}"][data-card]:not([data-card="026"])`));
+            const allPlanetsOnBoardExecptEris = Array.from(document.querySelectorAll(`.tuile__content[data-type="${TYPES[0]}"][data-card]:not([data-card="026"]):not([data-card="117"])`));
             const randomIndex = randomBetween(0, allPlanetsOnBoardExecptEris.length - 1);
             if (allPlanetsOnBoardExecptEris[randomIndex].dataset.card) {
                 allPlanetsOnBoardExecptEris[randomIndex].classList.add('destroyed');
@@ -803,9 +799,10 @@ function RevealPower(tuileNode, cardRevealed) {
 
         case '044':
             const allTuilesVoid = Array.from(document.querySelectorAll('.tuile:not(.tuile--sun) .tuile__content:not([data-card]):not(.obstructed)'));
-            const randIndex = randomBetween(0, allTuilesVoid.length - 1);
-            SetHtmlInHexagon(allTuilesVoid[randIndex], deepClone(ALL_CARDS.find(card => card.id === '045')));
-            RevealPower(allTuilesVoid[randIndex].parentNode, deepClone(ALL_CARDS.find(card => card.id === '045')));
+            const shuffledTuiles = allTuilesVoid.sort(() => Math.random() - 0.5).sort(() => Math.random() - 0.5);
+            const randIndex = randomBetween(0, shuffledTuiles.length - 1);
+            SetHtmlInHexagon(shuffledTuiles[randIndex], deepClone(ALL_CARDS.find(card => card.id === '045')));
+            RevealPower(shuffledTuiles[randIndex].parentNode, deepClone(ALL_CARDS.find(card => card.id === '045')));
 
             if (!localDex.allCards.find(c => c.id === '045').found) {
                 localDex.allCards.find(c => c.id === '045').found = Date.now();
@@ -1333,13 +1330,57 @@ function RevealPower(tuileNode, cardRevealed) {
             break;
 
         case '110':
-            const cardNeighbors = neighborsNode.filter(neighbor => neighbor.dataset.card && neighbor.dataset.type !== TYPES[3]);
+            const cardNeighbors = neighborsNode.filter(neighbor => neighbor.dataset.card && neighbor.dataset.type !== TYPES[3] && neighbor.dataset.card !== '117');
             const shuffled = cardNeighbors.sort(() => Math.random() - 0.5);
             const selectedNeighbors = shuffled.slice(0, 3);
             selectedNeighbors.forEach(neighbor => {
                 neighbor.classList.add('destroyed');
                 cardsDestroyToReset.push(neighbor.dataset.card);
             });
+
+            let nbCardDestroyed = selectedNeighbors.length;
+            AddToTuile(tuileContent, nbCardDestroyed * 2)
+            break;
+
+        case '112':
+            let cumulePwr = 0;
+            neighborsNode.forEach(neighborNode => {
+                if (!neighborNode.parentNode.classList.contains('tuile--sun') && neighborNode.dataset.card !== '117') {
+                    if (neighborNode.dataset.card) {
+                        const ogParentId = neighborNode.parentNode.dataset.id;
+                        
+                        neighborNode.classList.add('destroyed');
+                        cardsDestroyToReset.push(neighborNode.dataset.card);
+
+                        cumulePwr += GetCardTruePwr(ogParentId);
+                    }
+                }
+            });
+
+            AddToTuile(tuileContent, cumulePwr);
+            break;
+
+        case '113':
+            let cumulePwrDestroy = 0;
+            listPwrDestroyInRound.forEach(pwr => cumulePwrDestroy += pwr);
+            AddToTuile(tuileContent, cumulePwrDestroy);
+            break;
+
+        case '115':
+            const cardNeighbors115 = neighborsNode.filter(neighbor => neighbor.dataset.card && neighbor.dataset.type !== TYPES[3] && neighbor.dataset.card !== '117');
+            const randVoid = cardNeighbors115.sort(() => Math.random() - 0.5).sort(() => Math.random() - 0.5).slice(0, 1)[0];
+            randVoid.classList.add('destroyed');
+            cardsDestroyToReset.push(randVoid.dataset.card);
+            break;
+
+        case '116':
+            const allCards = document.querySelectorAll('.terrain .tuile:not(.tuile--sun) .tuile__content[data-card]');
+            allCards.forEach(card => {
+                if (ALL_CARDS.find(c => c.id === card.dataset.card).mana === 1) {
+                    card.classList.add('destroyed');
+                    cardsDestroyToReset.push(card.dataset.card);
+                }
+            })
             break;
 
         default:
@@ -1377,14 +1418,14 @@ function RevealPower(tuileNode, cardRevealed) {
     const trappist1G = document.querySelector('.tuile__content[data-card="037"]');
     if (trappist1G && tuileContent.dataset.card !== '037') AddToTuile(trappist1G, 1);
 
-    const cancriD = document.querySelector('.tuile__content[data-card="046"]');
+    let cancriD = document.querySelector('.tuile__content[data-card="046"]');
     if (cancriD && cardRevealed.type === TYPES[0]) {
         neighborsNode.forEach(neighborNode => {
             if (neighborNode.dataset.card === '046') AddToTuile(tuileContent, -1);
         });
     }
 
-    const titan = document.querySelector('.tuile__content[data-card="048"]');
+    let titan = document.querySelector('.tuile__content[data-card="048"]');
     if (titan && cardRevealed.type === TYPES[0]) {
         neighborsNode.forEach(neighborNode => {
             if (neighborNode.dataset.card === '048') AddToTuile(tuileContent, 2);
@@ -1471,14 +1512,14 @@ function RevealPower(tuileNode, cardRevealed) {
         }
     }
 
-    const callisto = document.querySelector('.tuile__content[data-card="057"]');
+    let callisto = document.querySelector('.tuile__content[data-card="057"]');
     if (callisto && cardRevealed.type === TYPES[0]) {
         neighborsNode.forEach(neighborNode => {
             if (neighborNode.dataset.card === '057') AddToTuile(tuileContent, 1);
         });
     }
 
-    const purpleQuantum = document.querySelector('.tuile__content[data-card="081"]');
+    let purpleQuantum = document.querySelector('.tuile__content[data-card="081"]');
     if (purpleQuantum) {
         if (cardRevealed.type === TYPES[0]) {
             neighborsNode.forEach(neighborNode => {
@@ -1510,7 +1551,7 @@ function RevealPower(tuileNode, cardRevealed) {
         }
     }
 
-    const quanticaLaranja = document.querySelector('.tuile__content[data-card="082"]');
+    let quanticaLaranja = document.querySelector('.tuile__content[data-card="082"]');
     if (quanticaLaranja) {
         if (cardRevealed.type === TYPES[0]) {
             neighborsNode.forEach(neighborNode => {
@@ -1544,7 +1585,7 @@ function RevealPower(tuileNode, cardRevealed) {
         })
     }
 
-    const tethys = document.querySelector('.tuile__content[data-card="102"]');
+    let tethys = document.querySelector('.tuile__content[data-card="102"]');
     if (tethys && cardRevealed.type === TYPES[0]) {
         let hasTethysHasNeighbor = false;
 
@@ -1558,214 +1599,248 @@ function RevealPower(tuileNode, cardRevealed) {
     // Destroy treatment
     cardsDestroyToReset.forEach(cardIdDestroyed => {
         const cardDestroyedParent = document.querySelector(`.tuile:has([data-card="${cardIdDestroyed}"]`);
-        let needToDeleteTuile = true;
 
-        const cardPwr = cardDestroyedParent.querySelector('.tuile__content').dataset.pwr
-            ? parseInt(cardDestroyedParent.querySelector('.tuile__content').dataset.pwr)
-            : 0;
-
-        listPwrDestroyInRound.push(cardPwr);
-
-        switch (cardIdDestroyed) {
-            case '023':
-                document.querySelectorAll(`.tuile__content[data-type="${TYPES[0]}"]`).forEach(tuile => {
-                    AddToTuile(tuile, -1);
-                });
-                break;
-
-            case '042':
-                HtmlCards();
-                break;
-
-            case '045':
-                const allHecateNeighbors = GetAllNeighbors(hecate.parentNode);
-                allHecateNeighbors.forEach(neighbor => {
-                    if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) AddToTuile(neighbor, 4);
-                });
-                break;
-
-            case '046':
-                const allCancriDNeighbors = GetAllNeighbors(cancriD.parentNode);
-                allCancriDNeighbors.forEach(neighbor => {
-                    if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) AddToTuile(neighbor, 1);
-                });
-                break;
-
-            case '048':
-                const allTitanNeighbors = GetAllNeighbors(titan.parentNode);
-                allTitanNeighbors.forEach(neighbor => {
-                    if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) AddToTuile(neighbor, -2);
-                });
-                break;
-
-            case '049':
-                document.querySelectorAll('.obstructed').forEach(o => o.classList.remove('obstructed'));
-                break;
-
-            case '053':
-                document.querySelectorAll(`.tuile__content[data-type="${TYPES[0]}"]`).forEach(tuile => {
-                    if (ALL_CARDS.find(card => card.id === tuile.dataset.card).mana === 1) {
+        if (cardIdDestroyed !== '117') {
+            let needToDeleteTuile = true;
+    
+            const cardPwr = GetCardTruePwr(cardDestroyedParent.dataset.id);
+            listPwrDestroyInRound.push(cardPwr);
+    
+            hecate = document.querySelector('.tuile__content[data-card="045"]');
+            cancriD = document.querySelector('.tuile__content[data-card="046"]');
+            titan = document.querySelector('.tuile__content[data-card="048"]');
+            callisto = document.querySelector('.tuile__content[data-card="057"]');
+            purpleQuantum = document.querySelector('.tuile__content[data-card="081"]');
+            quanticaLaranja = document.querySelector('.tuile__content[data-card="082"]');
+            tethys = document.querySelector('.tuile__content[data-card="102"]');
+    
+            switch (cardIdDestroyed) {
+                case '023':
+                    document.querySelectorAll(`.tuile__content[data-type="${TYPES[0]}"]`).forEach(tuile => {
                         AddToTuile(tuile, -1);
-                    }
-                });
-                break;
-
-            case '057':
-                const allCallistoNeighbors = GetAllNeighbors(callisto.parentNode);
-                allCallistoNeighbors.forEach(neighbor => {
-                    if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) AddToTuile(neighbor, -1);
-                });
-                break;
-
-            case '081':
-                const allPurpleQuantumNeighbors = GetAllNeighbors(purpleQuantum.parentNode);
-                allPurpleQuantumNeighbors.forEach(neighbor => {
-                    if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) AddToTuile(neighbor, -1);
-                });
-
-                if (purpleQuantum.dataset.boost === 'true') {
-                    let athanasios = playerHand.find(card => card.id === '077') || playerDeck.find(card => card.id === '077');
-                    if (athanasios) {
-                        athanasios.pwr -= 10;
-                        purpleQuantum.dataset.boost = 'false';
-                    } else {
-                        athanasios = document.querySelector('.tuile__content[data-card="077"]');
+                    });
+                    break;
+    
+                case '042':
+                    HtmlCards();
+                    break;
+    
+                case '045':
+                    const allHecateNeighbors = GetAllNeighbors(hecate.parentNode);
+                    allHecateNeighbors.forEach(neighbor => {
+                        if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) AddToTuile(neighbor, 4);
+                    });
+                    break;
+    
+                case '046':
+                    const allCancriDNeighbors = GetAllNeighbors(cancriD.parentNode);
+                    allCancriDNeighbors.forEach(neighbor => {
+                        if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) AddToTuile(neighbor, 1);
+                    });
+                    break;
+    
+                case '048':
+                    const allTitanNeighbors = GetAllNeighbors(titan.parentNode);
+                    
+                    allTitanNeighbors.forEach(neighbor => {
+                        if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) AddToTuile(neighbor, -2);
+                    });
+                    break;
+    
+                case '049':
+                    document.querySelectorAll('.obstructed').forEach(o => o.classList.remove('obstructed'));
+                    break;
+    
+                case '053':
+                    document.querySelectorAll(`.tuile__content[data-type="${TYPES[0]}"]`).forEach(tuile => {
+                        if (ALL_CARDS.find(card => card.id === tuile.dataset.card).mana === 1) {
+                            AddToTuile(tuile, -1);
+                        }
+                    });
+                    break;
+    
+                case '057':
+                    const allCallistoNeighbors = GetAllNeighbors(callisto.parentNode);
+                    allCallistoNeighbors.forEach(neighbor => {
+                        if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) AddToTuile(neighbor, -1);
+                    });
+                    break;
+    
+                case '081':
+                    const allPurpleQuantumNeighbors = GetAllNeighbors(purpleQuantum.parentNode);
+                    allPurpleQuantumNeighbors.forEach(neighbor => {
+                        if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) AddToTuile(neighbor, -1);
+                    });
+    
+                    if (purpleQuantum.dataset.boost === 'true') {
+                        let athanasios = playerHand.find(card => card.id === '077') || playerDeck.find(card => card.id === '077');
                         if (athanasios) {
-                            AddToTuile(athanasios, -10);
+                            athanasios.pwr -= 10;
                             purpleQuantum.dataset.boost = 'false';
+                        } else {
+                            athanasios = document.querySelector('.tuile__content[data-card="077"]');
+                            if (athanasios) {
+                                AddToTuile(athanasios, -10);
+                                purpleQuantum.dataset.boost = 'false';
+                            }
                         }
                     }
-                }
-                break;
-
-            case '082':
-                const allQuanticaLaranjaNeighbors = GetAllNeighbors(quanticaLaranja.parentNode);
-                allQuanticaLaranjaNeighbors.forEach(neighbor => {
-                    if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) AddToTuile(neighbor, 1);
-                });
-                break;
-
-            case '101':
-                document.querySelectorAll('.tuile__content[data-boost101="true"]').forEach(planet => {
-                    planet.dataset.boost101 = 'false';
-                    AddToTuile(planet, -2);
-                });
-                break;
-
-            case '102':
-                const allTethysNeighbors = GetAllNeighbors(tethys.parentNode);
-                const allTethysNeighborsId = [];
-                allTethysNeighbors.forEach(neighbor => {
-                    if (neighbor.dataset.type === TYPES[0]) allTethysNeighborsId.push(neighbor.dataset.card);
-                });
-                allPlanetsOnBoard.forEach(planet => {
-                    if (!allTethysNeighborsId.includes(planet.dataset.card)) {
-                        AddToTuile(planet, -1);
-                    }
-                });
-                break;
-
-            case '103':
-                const animation = document.createElement('div');
-                animation.classList.add('wave');
-                cardDestroyedParent.appendChild(animation);
-                allPlanetsOnBoard.forEach(planet => AddToTuile(planet, 1));
-
-                setTimeout(() => {
-                    animation.classList.remove('wave');
-                }, 2000);
-                break;
-
-            case '106':
-                const shiva = document.querySelector('.tuile__content[data-card="106"]');
-                // to do
-                break;
-
-            case '107':
-                setTimeout(() => {
-                    SetHtmlInHexagon(document.querySelector('.tuile[data-id="test"] .tuile__content'), deepClone(ALL_CARDS.find(card => card.id === '108')));
-                    MovePlatet('test', cardDestroyedParent.dataset.id);
-                    ClearOneTuile('test');
-                    if (uranus) AddToTuile(cardDestroyedParent.querySelector('.tuile__content'), 1);
-
-                    const nemesisTuile = document.querySelector('.terrain .tuile:has([data-card="108"])');
-                    nemesisTuile.setAttribute(
-                        'style',
-                        `
-                            transform: rotate(720deg);
-                            transition: all 0s;
-                        `
-                    );
-
+                    break;
+    
+                case '082':
+                    const allQuanticaLaranjaNeighbors = GetAllNeighbors(quanticaLaranja.parentNode);
+                    allQuanticaLaranjaNeighbors.forEach(neighbor => {
+                        if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) AddToTuile(neighbor, 1);
+                    });
+                    break;
+    
+                case '101':
+                    document.querySelectorAll('.tuile__content[data-boost101="true"]').forEach(planet => {
+                        planet.dataset.boost101 = 'false';
+                        AddToTuile(planet, -2);
+                    });
+                    break;
+    
+                case '102':
+                    const allTethysNeighbors = GetAllNeighbors(tethys.parentNode);
+                    const allTethysNeighborsId = [];
+                    allTethysNeighbors.forEach(neighbor => {
+                        if (neighbor.dataset.type === TYPES[0]) allTethysNeighborsId.push(neighbor.dataset.card);
+                    });
+                    allPlanetsOnBoard.forEach(planet => {
+                        if (!allTethysNeighborsId.includes(planet.dataset.card)) {
+                            AddToTuile(planet, -1);
+                        }
+                    });
+                    break;
+    
+                case '103':
+                    const animation = document.createElement('div');
+                    animation.classList.add('wave');
+                    cardDestroyedParent.appendChild(animation);
+                    allPlanetsOnBoard.forEach(planet => AddToTuile(planet, 1));
+    
                     setTimeout(() => {
+                        animation.classList.remove('wave');
+                    }, 2000);
+                    break;
+    
+                case '106':
+                    wasShivaDestroyedLastTurn = cardPwr;
+                    break;
+    
+                case '107':
+                    setTimeout(() => {
+                        SetHtmlInHexagon(document.querySelector('.tuile[data-id="test"] .tuile__content'), deepClone(ALL_CARDS.find(card => card.id === '108')));
+                        MovePlatet('test', cardDestroyedParent.dataset.id);
+                        ClearOneTuile('test');
+                        if (uranus) AddToTuile(cardDestroyedParent.querySelector('.tuile__content'), 1);
+    
+                        const nemesisTuile = document.querySelector('.terrain .tuile:has([data-card="108"])');
                         nemesisTuile.setAttribute(
                             'style',
                             `
-                                transform: rotate(0deg);
-                                transition: all 1s ease-in-out;
+                                transform: rotate(720deg);
+                                transition: all 0s;
                             `
                         );
+                        
                         setTimeout(() => {
-                            nemesisTuile.removeAttribute('style');
-                        }, 1000);
-                    }, 10);
-                }, 2550);
-                break;
+                            nemesisTuile.setAttribute(
+                                'style',
+                                `
+                                transform: rotate(0deg);
+                                transition: all 1s ease-in-out;
+                                `
+                            );
+                            setTimeout(() => {
+                                nemesisTuile.removeAttribute('style');
+                            }, 1000);
+                        }, 10);
+    
+                        UpdateCurrentAllPointsScored();
+                    }, 2550);
+                    break;
+    
+                case '111':
+                    const oldPwr = parseInt(cardDestroyedParent.querySelector('.tuile__content').dataset.pwr);
+    
+                    setTimeout(() => {
+                        const allVoidTuiles = Array.from(document.querySelectorAll(`.terrain .tuile:not(.obstructed):not(.tuile--sun):not(:has([data-card])):not([data-id="${cardDestroyedParent.dataset.id}"])`));
+                        if (allVoidTuiles.length > 0) {
+                            let shuffled = allVoidTuiles.sort(() => Math.random() - 0.5);
+                            shuffled = shuffled.sort(() => Math.random() - 0.5);
+                            const selectedVoidTuile = shuffled.slice(0, 1)[0];
+        
+                            SetHtmlInHexagon(document.querySelector('.tuile[data-id="test"] .tuile__content'), deepClone(ALL_CARDS.find(card => card.id === '111')));
+                            MovePlatet('test', cardDestroyedParent.dataset.id);
+                            ClearOneTuile('test');
+    
+                            if (uranus) AddToTuile(cardDestroyedParent.querySelector('.tuile__content'), 1);
+                            const currentPwr = parseInt(cardDestroyedParent.querySelector('.tuile__content').dataset.pwr);
+                            if (parseInt(currentPwr) < oldPwr) {
+                                AddToTuile(cardDestroyedParent.querySelector('.tuile__content'), oldPwr - currentPwr);
+                            }
+                            
+                            MovePlatet(cardDestroyedParent.dataset.id, selectedVoidTuile.dataset.id);
+                            AddToTuile(selectedVoidTuile.querySelector('.tuile__content'), 2);
+                            
+                            UpdateCurrentAllPointsScored();
+                        }
+                    }, 2550);
+                    break;
+    
+                case '114':
+                    wasCerbereDestroyedLastTurn = cardPwr;
+                    break;
+    
+                default:
+                    break;
+            }
+    
+            const thanatosCard = playerHand.find(card => card.id === '109') || playerDeck.find(card => card.id === '109');
+            if (thanatosCard) {
+                thanatosCard.mana = Math.max(thanatosCard.mana - 1, 0);
+                HtmlCards();
+            }
+    
+            const anubis = document.querySelector('.terrain .tuile__content[data-card="113"]');
+            if (anubis) AddToTuile(anubis, cardPwr);
 
-            case '111':
-                const oldPwr = parseInt(cardDestroyedParent.querySelector('.tuile__content').dataset.pwr);
-
+            const hel = document.querySelector('.terrain .tuile__content[data-card="117"]');
+            if (hel) AddToTuile(hel, 1);
+    
+            // Animation
+            const svg = cardDestroyedParent.querySelector('.tuile__hexa path');
+            if (svg && needToDeleteTuile) {
+                svg.style.transition = 'filter .5s ease-in-out';
+                svg.style.filter = 'invert(1)';
                 setTimeout(() => {
-                    const allVoidTuiles = Array.from(document.querySelectorAll('.terrain .tuile:not(.obstructed):not(.tuile--sun):not(:has([data-card]))'));
-                    const shuffled = allVoidTuiles.sort(() => Math.random() - 0.5);
-                    const selectedVoidTuile = shuffled.slice(0, 1)[0];
-
-                    SetHtmlInHexagon(document.querySelector('.tuile[data-id="test"] .tuile__content'), deepClone(ALL_CARDS.find(card => card.id === '111')));
-                    MovePlatet('test', cardDestroyedParent.dataset.id);
-                    ClearOneTuile('test');
-                    if (uranus) AddToTuile(cardDestroyedParent.querySelector('.tuile__content'), 1);
-                    const currentPwr = parseInt(cardDestroyedParent.querySelector('.tuile__content').dataset.pwr);
-                    if (parseInt(currentPwr) < oldPwr) {
-                        AddToTuile(cardDestroyedParent.querySelector('.tuile__content'), oldPwr - currentPwr);
-                    }
-                    MovePlatet(cardDestroyedParent.dataset.id, selectedVoidTuile.parentNode.dataset.id);
-                }, 2550);
-                break;
-
-            default:
-                break;
+                    svg.style.filter = 'invert(0)';
+    
+                    const tuileHexa = cardDestroyedParent.querySelector('.tuile__hexa');
+                    tuileHexa.style.transition = 'all 2s ease';
+                    tuileHexa.style.opacity = '0';
+    
+                    const tuileContent = cardDestroyedParent.querySelector('.tuile__content');
+                    tuileContent.style.transition = 'all 2s ease';
+                    tuileContent.style.opacity = '0';
+    
+                    setTimeout(() => {
+                        ClearOneTuile(cardDestroyedParent);
+                        UpdateCurrentAllPointsScored();
+                    }, 2000);
+                }, 500);
+            }
         }
 
-        const thanatosCard = playerHand.find(card => card.id === '109') || playerDeck.find(card => card.id === '109');
-        if (thanatosCard) {
-            thanatosCard.mana = Math.max(thanatosCard.mana - 1, 0);
-            HtmlCards();
-        }
-
-        // Animation
-        const svg = cardDestroyedParent.querySelector('.tuile__hexa path');
-        if (svg && needToDeleteTuile) {
-            svg.style.transition = 'filter .5s ease-in-out';
-            svg.style.filter = 'invert(1)';
-            setTimeout(() => {
-                svg.style.filter = 'invert(0)';
-
-                const tuileHexa = cardDestroyedParent.querySelector('.tuile__hexa');
-                tuileHexa.style.transition = 'all 2s ease';
-                tuileHexa.style.opacity = '0';
-
-                const tuileContent = cardDestroyedParent.querySelector('.tuile__content');
-                tuileContent.style.transition = 'all 2s ease';
-                tuileContent.style.opacity = '0';
-
-                setTimeout(() => {
-                    ClearOneTuile(cardDestroyedParent);
-                    UpdateCurrentAllPointsScored();
-                }, 2000);
-            }, 500);
-        }
+        const localDex = JSON.parse(localStorage.getItem('dex'));
+        localDex.nbCardsDestroyed += 1;
+        if (localDex.nbCardsDestroyed >= 100 && !localDex.allCards.find(c => c.id === '106').found) localDex.allCards.find(c => c.id === '106').found = Date.now();
+        localStorage.setItem('dex', JSON.stringify(localDex));
 
         // suppr du tableau après traitement
+        cardDestroyedParent.querySelector('.tuile__content')?.classList.remove('destroyed');
         cardsDestroyToReset = cardsDestroyToReset.filter(id => id !== cardIdDestroyed);
     });
 }
@@ -1977,6 +2052,25 @@ function PowerEndOfTurn() {
             });
         }
     }
+    // --- 106
+    if (wasShivaDestroyedLastTurn) {
+        const shiva = deepClone(ALL_CARDS.find(c => c.id === '106'));
+        shiva.pwr = (wasShivaDestroyedLastTurn * 2);
+        playerHand.push(shiva);
+        HtmlCards();
+
+        wasShivaDestroyedLastTurn = false;
+    }
+    // --- 114
+    if (wasCerbereDestroyedLastTurn) {
+        const cerbere = deepClone(ALL_CARDS.find(c => c.id === '114'));
+        cerbere.pwr = wasCerbereDestroyedLastTurn;
+        cerbere.mana = 0;
+        playerHand.push(cerbere);
+        HtmlCards();
+
+        wasCerbereDestroyedLastTurn = false;
+    }
 
     UpdateCurrentAllPointsScored();
 }
@@ -2076,6 +2170,16 @@ function End() {
         if (nbOneCardSupToEleven >= 2 ) {
             localDex.allCards.find(c => c.id === '099').found = Date.now();
             localDex.allCards.find(c => c.id === '100').found = Date.now();
+            foundSomeCards = true;
+        }
+    }
+    if (
+        allPoints >= pointsToScore &&
+        !localDex.allCards.find(c => c.id === '113').found
+    ) {
+        const shiva = document.querySelector('.terrain .tuile__content[data-card="106"]');
+        if (shiva && parseInt(shiva.dataset.pwr) >= 20) {
+            localDex.allCards.find(c => c.id === '113').found = Date.now();
             foundSomeCards = true;
         }
     }
@@ -2293,6 +2397,8 @@ function InitializationGame() {
     btnCd = 0;
     spaceCd = 0;
     maxCardsInHand = 6;
+    wasShivaDestroyedLastTurn = false;
+    wasCerbereDestroyedLastTurn = false;
     popupOffrande.querySelector('.offrande__moins').innerHTML = '';
     popupOffrande.querySelector('.offrande__moins').classList.add('hide');
     popupOffrande.querySelector('.offrande__plus').innerHTML = '';
@@ -2923,6 +3029,8 @@ function InitLocalStorage() {
 
     if (!localDex.defaultDeck) localDex.defaultDeck = [...DEFAULT_DECK];
 
+    if (!localDex.nbCardsDestroyed) localDex.nbCardsDestroyed = 0;
+
     if (!localDex.allCards) {
         localDex.allCards = ALL_CARDS.map((card, i) => {
             return {
@@ -3270,4 +3378,19 @@ function Keypress(e) {
             selectedCardNode = cardToSelect;
         }
     }
+}
+
+
+function GetCardTruePwr(tuileId) {
+    MovePlatet(tuileId ,'test');
+
+    const card = document.querySelector('.tuile[data-id="test"] .tuile__content');
+
+    let truePwr = parseInt(card?.dataset.pwr) || 0;
+    if (card.dataset.pwr && document.querySelector('.tuile__content[data-card="023"]')) truePwr -= 1;
+
+    MovePlatet('test', tuileId);
+    ClearOneTuile('test');
+    
+    return truePwr;
 }
