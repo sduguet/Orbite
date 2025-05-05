@@ -27,7 +27,7 @@ let nbTurnMax;
 let startingCardsChosen;
 let manaBonus;
 let manaMaxBonus;
-let cardsDestroyToReset;
+let tuilesDestroyToReset;
 let btnCd;
 let spaceCd;
 let offrandeChoiceAdd;
@@ -134,12 +134,6 @@ function SetPlayerHand() {
     if (proximaB) {
         playerDeck = playerDeck.filter(card => card.id !== '029');
         playerHand.push(deepClone(proximaB));
-    }
-
-    const aaa = playerDeck.find(card => card.id === '117');
-    if (aaa) {
-        playerDeck = playerDeck.filter(card => card.id !== '117');
-        playerHand.push(deepClone(aaa));
     }
 
     while (playerHand.length < 3) {
@@ -728,7 +722,7 @@ function RevealPower(tuileNode, cardRevealed) {
             const randomIndex = randomBetween(0, allPlanetsOnBoardExecptEris.length - 1);
             if (allPlanetsOnBoardExecptEris[randomIndex].dataset.card) {
                 allPlanetsOnBoardExecptEris[randomIndex].classList.add('destroyed');
-                cardsDestroyToReset.push(allPlanetsOnBoardExecptEris[randomIndex].dataset.card);
+                tuilesDestroyToReset.push(allPlanetsOnBoardExecptEris[randomIndex].parentNode.dataset.id);
             }
             break;
 
@@ -791,7 +785,7 @@ function RevealPower(tuileNode, cardRevealed) {
                 if (!neighborNode.parentNode.classList.contains('tuile--sun')) {
                     if (neighborNode.dataset.card) {
                         neighborNode.classList.add('destroyed');
-                        cardsDestroyToReset.push(neighborNode.dataset.card);
+                        tuilesDestroyToReset.push(neighborNode.parentNode.dataset.id);
                     }
                 }
             });
@@ -1335,7 +1329,7 @@ function RevealPower(tuileNode, cardRevealed) {
             const selectedNeighbors = shuffled.slice(0, 3);
             selectedNeighbors.forEach(neighbor => {
                 neighbor.classList.add('destroyed');
-                cardsDestroyToReset.push(neighbor.dataset.card);
+                tuilesDestroyToReset.push(neighbor.parentNode.dataset.id);
             });
 
             let nbCardDestroyed = selectedNeighbors.length;
@@ -1350,7 +1344,7 @@ function RevealPower(tuileNode, cardRevealed) {
                         const ogParentId = neighborNode.parentNode.dataset.id;
                         
                         neighborNode.classList.add('destroyed');
-                        cardsDestroyToReset.push(neighborNode.dataset.card);
+                        tuilesDestroyToReset.push(neighborNode.parentNode.dataset.id);
 
                         cumulePwr += GetCardTruePwr(ogParentId);
                     }
@@ -1370,7 +1364,7 @@ function RevealPower(tuileNode, cardRevealed) {
             const cardNeighbors115 = neighborsNode.filter(neighbor => neighbor.dataset.card && neighbor.dataset.type !== TYPES[3] && neighbor.dataset.card !== '117');
             const randVoid = cardNeighbors115.sort(() => Math.random() - 0.5).sort(() => Math.random() - 0.5).slice(0, 1)[0];
             randVoid.classList.add('destroyed');
-            cardsDestroyToReset.push(randVoid.dataset.card);
+            tuilesDestroyToReset.push(randVoid.parentNode.dataset.id);
             break;
 
         case '116':
@@ -1378,7 +1372,7 @@ function RevealPower(tuileNode, cardRevealed) {
             allCards.forEach(card => {
                 if (ALL_CARDS.find(c => c.id === card.dataset.card).mana === 1) {
                     card.classList.add('destroyed');
-                    cardsDestroyToReset.push(card.dataset.card);
+                    tuilesDestroyToReset.push(card.parentNode.dataset.id);
                 }
             })
             break;
@@ -1597,13 +1591,17 @@ function RevealPower(tuileNode, cardRevealed) {
     }    
 
     // Destroy treatment
-    cardsDestroyToReset.forEach(cardIdDestroyed => {
-        const cardDestroyedParent = document.querySelector(`.tuile:has([data-card="${cardIdDestroyed}"]`);
+    console.log("start", tuilesDestroyToReset.length);
+    console.log(tuilesDestroyToReset);
+    
+    tuilesDestroyToReset.forEach(tuileIdDestroyed => {
+        const cardDestroyedParent =  document.querySelector(`.tuile[data-id="${tuileIdDestroyed}"]`);
+        const cardIdDestroyed = cardDestroyedParent.querySelector('.tuile__content').dataset.card;
 
         if (cardIdDestroyed !== '117') {
             let needToDeleteTuile = true;
     
-            const cardPwr = GetCardTruePwr(cardDestroyedParent.dataset.id);
+            const cardPwr = GetCardTruePwr(tuileIdDestroyed);
             listPwrDestroyInRound.push(cardPwr);
     
             hecate = document.querySelector('.tuile__content[data-card="045"]');
@@ -1732,7 +1730,7 @@ function RevealPower(tuileNode, cardRevealed) {
                 case '107':
                     setTimeout(() => {
                         SetHtmlInHexagon(document.querySelector('.tuile[data-id="test"] .tuile__content'), deepClone(ALL_CARDS.find(card => card.id === '108')));
-                        MovePlatet('test', cardDestroyedParent.dataset.id);
+                        MovePlatet('test', tuileIdDestroyed);
                         ClearOneTuile('test');
                         if (uranus) AddToTuile(cardDestroyedParent.querySelector('.tuile__content'), 1);
     
@@ -1766,14 +1764,14 @@ function RevealPower(tuileNode, cardRevealed) {
                     const oldPwr = parseInt(cardDestroyedParent.querySelector('.tuile__content').dataset.pwr);
     
                     setTimeout(() => {
-                        const allVoidTuiles = Array.from(document.querySelectorAll(`.terrain .tuile:not(.obstructed):not(.tuile--sun):not(:has([data-card])):not([data-id="${cardDestroyedParent.dataset.id}"])`));
+                        const allVoidTuiles = Array.from(document.querySelectorAll(`.terrain .tuile:not(.obstructed):not(.tuile--sun):not(:has([data-card])):not([data-id="${tuileIdDestroyed}"])`));
                         if (allVoidTuiles.length > 0) {
                             let shuffled = allVoidTuiles.sort(() => Math.random() - 0.5);
                             shuffled = shuffled.sort(() => Math.random() - 0.5);
                             const selectedVoidTuile = shuffled.slice(0, 1)[0];
         
                             SetHtmlInHexagon(document.querySelector('.tuile[data-id="test"] .tuile__content'), deepClone(ALL_CARDS.find(card => card.id === '111')));
-                            MovePlatet('test', cardDestroyedParent.dataset.id);
+                            MovePlatet('test', tuileIdDestroyed);
                             ClearOneTuile('test');
     
                             if (uranus) AddToTuile(cardDestroyedParent.querySelector('.tuile__content'), 1);
@@ -1782,7 +1780,7 @@ function RevealPower(tuileNode, cardRevealed) {
                                 AddToTuile(cardDestroyedParent.querySelector('.tuile__content'), oldPwr - currentPwr);
                             }
                             
-                            MovePlatet(cardDestroyedParent.dataset.id, selectedVoidTuile.dataset.id);
+                            MovePlatet(tuileIdDestroyed, selectedVoidTuile.dataset.id);
                             AddToTuile(selectedVoidTuile.querySelector('.tuile__content'), 2);
                             
                             UpdateCurrentAllPointsScored();
@@ -1841,7 +1839,10 @@ function RevealPower(tuileNode, cardRevealed) {
 
         // suppr du tableau après traitement
         cardDestroyedParent.querySelector('.tuile__content')?.classList.remove('destroyed');
-        cardsDestroyToReset = cardsDestroyToReset.filter(id => id !== cardIdDestroyed);
+        tuilesDestroyToReset = tuilesDestroyToReset.filter(id => id !== tuileIdDestroyed);
+
+        console.log("---", tuilesDestroyToReset.length);
+        console.log(tuilesDestroyToReset);
     });
 }
 
@@ -2392,7 +2393,7 @@ function InitializationGame() {
     currentTurn = 0;
     manaBonus = 0;
     manaMaxBonus = 0;
-    cardsDestroyToReset = [];
+    tuilesDestroyToReset = [];
     listPwrDestroyInRound = [];
     btnCd = 0;
     spaceCd = 0;
