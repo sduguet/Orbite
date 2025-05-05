@@ -523,7 +523,7 @@ function RevealPower(tuileNode, cardRevealed) {
     const localDex = JSON.parse(localStorage.getItem('dex')) || {};
     const neighborsNode = GetAllNeighbors(tuileNode);
     const lastCardPlayed = GetLastCardPlayed() ? ALL_CARDS.find(card => card.id === GetLastCardPlayed()) : null;
-    const allPlanetsOnBoard = Array.from(document.querySelectorAll(`.terrain .tuile__content[data-type="planet"]`));
+    const allPlanetsOnBoard = Array.from(document.querySelectorAll(`.terrain .tuile__content[data-type="${TYPES[0]}"]`));
     let tuileContent = tuileNode.querySelector('.tuile__content');
 
     const blackHole = document.querySelector('.tuile--sun [data-card="016"]');
@@ -798,7 +798,7 @@ function RevealPower(tuileNode, cardRevealed) {
             break;
 
         case '044':
-            const allTuilesVoid = Array.from(document.querySelectorAll('.tuile:not(.tuile--sun) .tuile__content:not([data-card]):not(.obstructed)'));
+            const allTuilesVoid = Array.from(document.querySelectorAll('.terrain .tuile:not(.tuile--sun) .tuile__content:not([data-card]):not(.obstructed)'));
             const shuffledTuiles = allTuilesVoid.sort(() => Math.random() - 0.5).sort(() => Math.random() - 0.5);
             const randIndex = randomBetween(0, shuffledTuiles.length - 1);
             SetHtmlInHexagon(shuffledTuiles[randIndex], deepClone(ALL_CARDS.find(card => card.id === '045')));
@@ -865,7 +865,7 @@ function RevealPower(tuileNode, cardRevealed) {
             break;
 
         case '052':
-            const allPlanetsAndMoonsExept052 = Array.from(document.querySelectorAll(`.tuile__content[data-type="planet"]:not([data-card="052"]), .tuile__content[data-type="lune"]:not([data-card="052"])`));
+            const allPlanetsAndMoonsExept052 = Array.from(document.querySelectorAll(`.terrain .tuile__content[data-type="${TYPES[0]}"]:not([data-card="052"]), .tuile__content[data-type="${TYPES[1]}"]:not([data-card="052"])`));
             const randomCardIndex = randomBetween(0, allPlanetsAndMoonsExept052.length - 1);
             const voidNeighbors052 = [];
 
@@ -3250,13 +3250,13 @@ function FilterAction() {
         const filterValue = filter.dataset.value;
 
         if (filterData === 'type') {
-            if (filterValue === 'lune') {
+            if (filterValue === TYPES[1]) {
                 allCollectionCards.forEach(card => {
                     if (ALL_CARDS.find(c => c.id === card.dataset.id).type !== TYPES[1]) card.classList.add('hide');
                 });
 
                 return;
-            } else if (filterValue === 'planet') {
+            } else if (filterValue === TYPES[0]) {
                 allCollectionCards.forEach(card => {
                     if (ALL_CARDS.find(c => c.id === card.dataset.id).type !== TYPES[0]) card.classList.add('hide');
                 });
