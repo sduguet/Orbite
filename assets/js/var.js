@@ -475,7 +475,7 @@ const ALL_CARDS = [
         'element': [ELEMENTS[2]],
         'mana': 2,
         'pwr': 2,
-        'desc': `[Révélée] +1 mana max à partir du prochian tour. [Continu] Vous ne pouvez jouer qu'une seule carte par tour`,
+        'desc': `[Révélée] +1 mana max à partir du prochain tour. [Continu] Vous ne pouvez jouer qu'une seule carte par tour`,
         'offrande': true,
         'playable': true,
     },
