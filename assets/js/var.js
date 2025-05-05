@@ -1100,7 +1100,7 @@ const ALL_CARDS = [
         'id': '096',
         'name': 'Andromedae C',
         'type': TYPES[0],
-        'element': [ELEMENTS[3]],
+        'element': [ELEMENTS[1]],
         'nature': NATURES[1],
         'mana': 2,
         'pwr': 2,
