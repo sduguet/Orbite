@@ -136,12 +136,6 @@ function SetPlayerHand() {
         playerHand.push(deepClone(proximaB));
     }
 
-    const aaa = playerDeck.find(card => card.id === '117');
-    if (aaa) {
-        playerDeck = playerDeck.filter(card => card.id !== '117');
-        playerHand.push(deepClone(aaa));
-    }
-
     while (playerHand.length < 3) {
         DrawCard();
     }
