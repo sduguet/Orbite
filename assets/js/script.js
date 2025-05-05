@@ -1158,7 +1158,6 @@ function RevealPower(tuileNode, cardRevealed) {
                     playerHand.push(randCard);
                     HtmlCards();
 
-                    const localDex = JSON.parse(localStorage.getItem('dex'));
                     if (!localDex.allCards.find(c => c.id === randCard.id).found) {
                         localDex.allCards.find(c => c.id === randCard.id).found = Date.now();
                         localStorage.setItem('dex', JSON.stringify(localDex));
@@ -1177,7 +1176,6 @@ function RevealPower(tuileNode, cardRevealed) {
                     playerHand.push(randCard);
                     HtmlCards();
 
-                    const localDex = JSON.parse(localStorage.getItem('dex'));
                     if (!localDex.allCards.find(c => c.id === randCard.id).found) {
                         localDex.allCards.find(c => c.id === randCard.id).found = Date.now();
                         localStorage.setItem('dex', JSON.stringify(localDex));
@@ -1206,6 +1204,11 @@ function RevealPower(tuileNode, cardRevealed) {
             });
 
             if (voidNeighbors096.length > 0) {
+                if (!localDex.allCards.find(c => c.id === '097').found) {
+                    localDex.allCards.find(c => c.id === '097').found = Date.now();
+                    localStorage.setItem('dex', JSON.stringify(localDex));
+                }
+
                 setTimeout(() => {
                     const rvni = randomBetween(0, voidNeighbors096.length - 1);
                     const tuileForClone = voidNeighbors096[rvni].parentNode;
@@ -1831,7 +1834,6 @@ function RevealPower(tuileNode, cardRevealed) {
             }
         }
 
-        const localDex = JSON.parse(localStorage.getItem('dex'));
         localDex.nbCardsDestroyed += 1;
         if (localDex.nbCardsDestroyed >= 100 && !localDex.allCards.find(c => c.id === '106').found) localDex.allCards.find(c => c.id === '106').found = Date.now();
         localStorage.setItem('dex', JSON.stringify(localDex));
