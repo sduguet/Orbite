@@ -3210,14 +3210,17 @@ function PowerRecalculation(parentStart, parentFinish) {
     const cardMovedId = cardMoved.dataset.card;
     const parentStartNeighbors = GetAllNeighbors(parentStart);
     const parentFinishNeighbors = GetAllNeighbors(parentFinish);
-    const orbitRegulation = GetRegulation(cardMovedId);
+    const orbitRegulationCard = GetRegulationCard(cardMovedId);
 
     parentStartNeighbors.forEach(neighbor => {
         if (neighbor.dataset.pwr && neighbor.dataset.type === TYPES[0]) {
-            AddToTuile(neighbor, (orbitRegulation * (-1)));
+            AddToTuile(neighbor, (orbitRegulationCard * (-1)));
         }
         if (neighbor.dataset.card !== cardMovedId) {
-            AddToTuile(cardMoved, (GetRegulation(neighbor.dataset.card) * (-1)));
+            AddToTuile(cardMoved, (GetRegulationCard(neighbor.dataset.card) * (-1)));
+        }
+        if (neighbor.dataset.type === TYPES[3]) {
+            AddToTuile(cardMoved, (GetRegulationStar(neighbor.dataset.card) * (-1)));
         }
     });
     parentFinishNeighbors.forEach(neighbor => {
@@ -3226,16 +3229,19 @@ function PowerRecalculation(parentStart, parentFinish) {
             neighbor.dataset.type === TYPES[0] &&
             neighbor.dataset.card !== cardMovedId
         ) {
-            AddToTuile(neighbor, orbitRegulation);
+            AddToTuile(neighbor, orbitRegulationCard);
         }
         if (neighbor.dataset.card !== cardMovedId) {
-            AddToTuile(cardMoved, GetRegulation(neighbor.dataset.card));
+            AddToTuile(cardMoved, GetRegulationCard(neighbor.dataset.card));
+        }
+        if (neighbor.dataset.type === TYPES[3]) {
+            AddToTuile(cardMoved, GetRegulationStar(neighbor.dataset.card));
         }
     });
 }
 
 
-function GetRegulation(cardId) {
+function GetRegulationCard(cardId) {
     const regulations = {
         '045': -4,
         '046': -1,
@@ -3246,6 +3252,14 @@ function GetRegulation(cardId) {
         '102': 1 * (-1),
     };
     return regulations[cardId] || 0;
+}
+
+
+function GetRegulationStar(starId) {
+    const regulations = {
+        '016': -2,
+    };
+    return regulations[starId] || 0;
 }
 
 
