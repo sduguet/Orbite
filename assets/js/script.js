@@ -1362,9 +1362,11 @@ function RevealPower(tuileNode, cardRevealed) {
 
         case '115':
             const cardNeighbors115 = neighborsNode.filter(neighbor => neighbor.dataset.card && neighbor.dataset.type !== TYPES[3] && neighbor.dataset.card !== '117');
-            const randVoid = cardNeighbors115.sort(() => Math.random() - 0.5).sort(() => Math.random() - 0.5).slice(0, 1)[0];
-            randVoid.classList.add('destroyed');
-            tuilesDestroyToReset.push(randVoid.parentNode.dataset.id);
+            if (cardNeighbors115.length > 0) {
+                const randVoid = cardNeighbors115.sort(() => Math.random() - 0.5).sort(() => Math.random() - 0.5).slice(0, 1)[0];
+                randVoid.classList.add('destroyed');
+                tuilesDestroyToReset.push(randVoid.parentNode.dataset.id);
+            }
             break;
 
         case '116':
@@ -1591,9 +1593,6 @@ function RevealPower(tuileNode, cardRevealed) {
     }    
 
     // Destroy treatment
-    console.log("start", tuilesDestroyToReset.length);
-    console.log(tuilesDestroyToReset);
-    
     tuilesDestroyToReset.forEach(tuileIdDestroyed => {
         const cardDestroyedParent =  document.querySelector(`.tuile[data-id="${tuileIdDestroyed}"]`);
         const cardIdDestroyed = cardDestroyedParent.querySelector('.tuile__content').dataset.card;
@@ -1840,9 +1839,6 @@ function RevealPower(tuileNode, cardRevealed) {
         // suppr du tableau après traitement
         cardDestroyedParent.querySelector('.tuile__content')?.classList.remove('destroyed');
         tuilesDestroyToReset = tuilesDestroyToReset.filter(id => id !== tuileIdDestroyed);
-
-        console.log("---", tuilesDestroyToReset.length);
-        console.log(tuilesDestroyToReset);
     });
 }
 
@@ -2553,13 +2549,52 @@ function SetOffrande() {
         !startingCardsChosen.some(handCard => handCard === card.id) && card.offrande
     );
 
-    const offrandeList = [];
+    let offrandeList = [];
     while (offrandeList.length < 3) {
         const rand = randomBetween(0, availableCards.length - 1);
         const pick = availableCards[rand];
 
         if (!offrandeList.includes(pick.id)) {
             offrandeList.push(pick.id);
+        }
+    }
+    // Si +70% de découverte et pas de nouvelles cartes dans l'Offrande, on relance
+    if (localDex.allCards.filter(c => c.found).length / localDex.allCards.length > .7) {
+        let hasNewCard = offrandeList.some(id => {
+            const card = localDex.allCards.find(c => c.id === id);
+            return card && !card.found;
+        });
+        
+        if (!hasNewCard) {
+            offrandeList = [];
+            while (offrandeList.length < 3) {
+                const rand = randomBetween(0, availableCards.length - 1);
+                const pick = availableCards[rand];
+
+                if (!offrandeList.includes(pick.id)) {
+                    offrandeList.push(pick.id);
+                }
+            }
+
+            // Si +85% de découverte et pas de nouvelles cartes dans l'Offrande, on relance
+            if (localDex.allCards.filter(c => c.found).length / localDex.allCards.length > .85) {
+                hasNewCard = offrandeList.some(id => {
+                    const card = localDex.allCards.find(c => c.id === id);
+                    return card && !card.found;
+                });
+
+                if (!hasNewCard) {
+                    offrandeList = [];
+                    while (offrandeList.length < 3) {
+                        const rand = randomBetween(0, availableCards.length - 1);
+                        const pick = availableCards[rand];
+
+                        if (!offrandeList.includes(pick.id)) {
+                            offrandeList.push(pick.id);
+                        }
+                    }
+                }
+            }
         }
     }
 
