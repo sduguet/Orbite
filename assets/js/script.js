@@ -41,6 +41,7 @@ let maxCardsInHand;
 let listPwrDestroyInRound;
 let wasShivaDestroyedLastTurn;
 let wasCerbereDestroyedLastTurn;
+let youLose;
 
 Init();
 function Init() {
@@ -320,6 +321,8 @@ function SelectCard() {
 
 function NextTurn() {
     if ((Date.now() - btnCd) < 1000) return;
+
+    if (youLose) End();
 
     if (currentTurn !== 0) PowerEndOfTurn();
 
@@ -2113,6 +2116,7 @@ function End() {
         allPoints += parseInt(card.dataset.pwr);
         maxPointOnSinglePlent = Math.max(maxPointOnSinglePlent, parseInt(card.dataset.pwr));
     });
+    if (allPoints < pointsToScore) youLose = true;
 
     popupEndScore.innerHTML = allPoints;
     popupEndToal.innerHTML = `${pointsToScore} énergie${pointsToScore > 1 ? 's' : ''} cosmique${pointsToScore > 1 ? 's' : ''}`;
@@ -2190,7 +2194,7 @@ function End() {
         InitChangeDeck();
     }
 
-    if (allPoints >= pointsToScore) {
+    if (allPoints >= pointsToScore && !youLose) {
         popupEndResult.innerHTML = `Manche réussie`;
 
         popupEndBtnNext.classList.remove('hide');
@@ -2398,6 +2402,7 @@ function InitializationGame() {
     maxCardsInHand = 6;
     wasShivaDestroyedLastTurn = false;
     wasCerbereDestroyedLastTurn = false;
+    youLose = false;
     popupOffrande.querySelector('.offrande__moins').innerHTML = '';
     popupOffrande.querySelector('.offrande__moins').classList.add('hide');
     popupOffrande.querySelector('.offrande__plus').innerHTML = '';
